@@ -54,14 +54,14 @@ namespace FastScriptReload.Examples
 			var f = FunctionLibrary.GetFunction(function);
 			var time = Time.time;
 			var step = 2f / resolution;
-			var v = 0.5f * step - 1f;
+			var v = 0.8f * step - 1f;
 			for (int i = 0, x = 0, z = 0; i < points.Length; i++, x++)
 			{
 				if (x == resolution)
 				{
 					x = 0;
 					z += 1;
-					v = (z + 0.5f) * step - 1f;
+					v = (z + 0f) * step - 1f;
 				}
 
 				var u = (x + 0.5f) * step - 1f;
