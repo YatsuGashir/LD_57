@@ -34,6 +34,9 @@ public class DrillController : MonoBehaviour
     {
         SelectDrill(0);
         drillSpeed = originalDrillSpeed;
+
+        //StartCoroutine(DrillDown());
+
     }
 
     public IEnumerator DrillDown()
@@ -41,6 +44,7 @@ public class DrillController : MonoBehaviour
         while (true) // Эта корутина будет выполняться бесконечно
         {
             MovePlatformDown();
+            CoolingSystem.instance.UpdateCoolingVolume(0.01f);
             yield return new WaitForSeconds(0.023f);
         }
     }
