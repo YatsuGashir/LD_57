@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,228 +8,106 @@ public class DrillController : MonoBehaviour
 {
     public static DrillController Instance;
 
-    [Header("References")]
     [SerializeField] private GameObject platform;
-    [SerializeField] private Tilemap[] tilemaps; 
-    [SerializeField] private SpriteRenderer drillSpriteRenderer;
-    [SerializeField] private BoxCollider2D platformCollider;
-
-    [Header("Drill Settings")]
     [SerializeField] private float originalDrillSpeed = 0.005f;
     private float drillSpeed;
-    private bool isDrilling = false;
-    private bool isCounting = false;
-    private float currentTime;
-    private int currentDrillIndex = 0;
+    private SpriteRenderer sprite;
 
-    [Header("Drill Pool")]
+    // Пул дрелей, который можно редактировать через инспектор
     public List<Drill> drillPool;
+
+    // Коэффициент улучшения текущей дрели
     public float currentDrillImprovement = 1f;
 
-    [Header("Overheat Settings")]
-    [SerializeField] private float overheatDrillMultiplier = 0.1f;
-    [SerializeField] private Color overheatColor = Color.red;
-    [SerializeField] private ParticleSystem overheatParticles;
-    [SerializeField] private AudioClip overheatSound;
-    private bool isOverheated = false;
-    private Color originalDrillColor;
+    // Спрайт, который будет отображаться для текущей дрели
+    public SpriteRenderer drillSpriteRenderer;
+
+    // Tilemap для удаления тайлов
+    [SerializeField] private Tilemap tilemap;
 
     private void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
+        Instance = this;
     }
 
     private void Start()
     {
         SelectDrill(0);
         drillSpeed = originalDrillSpeed;
-        originalDrillColor = drillSpriteRenderer.color;
+
+        //StartCoroutine(DrillDown());
+
     }
 
     public IEnumerator DrillDown()
     {
-        while (true)
+        while (true) // Эта корутина будет выполняться бесконечно
         {
             MovePlatformDown();
-            CoolingSystem.instance.UpdateCoolingVolume(0.1f);
+            CoolingSystem.instance.UpdateCoolingVolume(0.01f);
             yield return new WaitForSeconds(0.023f);
         }
     }
+    
+  
 
     private void MovePlatformDown()
     {
-        Vector3 newPosition = platform.transform.position;
-        newPosition.y -= drillSpeed * currentDrillImprovement;
-        platform.transform.position = newPosition;
-
+        var vector3 = platform.transform.position;
+        vector3.y = vector3.y - drillSpeed * currentDrillImprovement;
+        platform.transform.position = vector3;
+        
         CheckAndRemoveTilesUnderPlatform();
     }
-
+    
     private void CheckAndRemoveTilesUnderPlatform()
     {
-        if (platform == null) return;
+        BoxCollider2D platformCollider = platform.GetComponent<BoxCollider2D>();
+        if (platformCollider == null || tilemap == null) return;
 
-        platformCollider = platform.GetComponent<BoxCollider2D>();
-        if (platformCollider == null) return;
+        Bounds bounds = platformCollider.bounds;
+        Vector2 bottomLeft = new Vector2(bounds.min.x, bounds.min.y - 0.1f);
+        Vector2 bottomRight = new Vector2(bounds.max.x, bounds.min.y - 0.1f);
 
-        Bounds platformBounds = platformCollider.bounds;
-        float checkDepth = 0.2f;
-        Vector3 checkStart = platformBounds.min - new Vector3(0, checkDepth, 0);
-        Vector3 checkEnd = new Vector3(platformBounds.max.x, platformBounds.min.y - checkDepth, 0);
+        Vector3Int leftCell = tilemap.WorldToCell(bottomLeft);
+        Vector3Int rightCell = tilemap.WorldToCell(bottomRight);
 
-        foreach (Tilemap tilemap in tilemaps)
+        for (int x = leftCell.x; x <= rightCell.x; x++)
         {
-            if (tilemap != null)
+            Vector3Int cell = new Vector3Int(x, leftCell.y, leftCell.z);
+            if (tilemap.HasTile(cell))
             {
-                CheckTilemap(tilemap, checkStart, checkEnd);
+                tilemap.SetTile(cell, null);
             }
         }
     }
-    
-    private void CheckTilemap(Tilemap tilemap, Vector3 checkStart, Vector3 checkEnd)
-    {
-        if (tilemap == null) return;
-
-        Vector3Int startCell = tilemap.WorldToCell(checkStart);
-        Vector3Int endCell = tilemap.WorldToCell(checkEnd);
-
-        for (int x = startCell.x; x <= endCell.x; x++)
-        {
-            for (int y = startCell.y; y <= endCell.y; y++)
-            {
-                Vector3Int cellPosition = new Vector3Int(x, y, startCell.z);
-                if (tilemap.HasTile(cellPosition))
-                {
-                    tilemap.SetTile(cellPosition, null);
-                }
-            }
-        }
-    }
-
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("SoftRock"))
         {
             Debug.Log("Бур замедлен из-за земли");
             drillSpeed *= 0.5f;
-            CameraShake.instance?.ShakeCamera(0.07f, true);
+            CameraShake.instance.ShakeCamera(0.07f, true);
         }
 
-        if (other.CompareTag("Hard"))
-        {
-            currentTime = 7f;
-            Debug.Log("Бур погряз в очень жёсткой породе");
-            drillSpeed *= 0.01f;
-            CameraShake.instance?.ShakeCamera(1f, true);
-            GameManager.instance.MiningStage();
-            DroneController.instance.isActive = true;
-            StartCoroutine(HardDrill());
-        }
-    }
-
-    private IEnumerator HardDrill()
-    {
-        while (currentTime > 0)
-        {
-            DroneHUD.instance.TimeUpdate(currentTime);
-            currentTime -= Time.deltaTime;
-            yield return null;
-        }
-
-        DroneHUD.instance.TimeUpdate(-1f);
-        drillSpeed = originalDrillSpeed;
-        CameraShake.instance?.ShakeCamera(0f, false);
-        GameManager.instance.DrillingStage();
-        DroneController.instance.isActive = false;
+       
+        
     }
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        if (other.CompareTag("SoftRock"))
-        {
-            drillSpeed = originalDrillSpeed;
-            CameraShake.instance?.ShakeCamera(0.01f, true);
-        }
-        if (other.CompareTag("Hard"))
-        {
-            drillSpeed = originalDrillSpeed;
-            CameraShake.instance?.ShakeCamera(0.01f, true);
-        }
+        drillSpeed = originalDrillSpeed;
+        CameraShake.instance.ShakeCamera(0.01f, true);
     }
 
+
+
+    // Выбор дрели для использования
     public void SelectDrill(int drillIndex)
     {
-        if (drillIndex < 0 || drillIndex >= drillPool.Count) return;
-
-        currentDrillIndex = drillIndex;
         Drill selectedDrill = drillPool[drillIndex];
         currentDrillImprovement = selectedDrill.improvementFactor;
-        
-        if (drillSpriteRenderer != null)
-        {
-            drillSpriteRenderer.sprite = selectedDrill.drillSprite;
-        }
-
+        drillSpriteRenderer.sprite = selectedDrill.drillSprite;
         Debug.Log($"Выбрана дрель: {selectedDrill.drillName}, Коэффициент улучшения: {currentDrillImprovement}");
-    }
-
-    public void CheckOverheat(float currentCooling)
-    {
-        if (currentCooling <= 0 && !isOverheated)
-        {
-            StartOverheat();
-        }
-        else if (currentCooling > 0 && isOverheated)
-        {
-            StopOverheat();
-        }
-    }
-
-    private void StartOverheat()
-    {
-        isOverheated = true;
-        currentDrillImprovement *= overheatDrillMultiplier;
-        
-        if (drillSpriteRenderer != null)
-        {
-            drillSpriteRenderer.color = overheatColor;
-        }
-        
-        if (overheatParticles != null)
-        {
-            overheatParticles.Play();
-        }
-        
-        if (overheatSound != null)
-        {
-            AudioSource.PlayClipAtPoint(overheatSound, transform.position);
-        }
-        
-        Debug.Log("Перегрев! Мощность снижена до 10%");
-    }
-
-    private void StopOverheat()
-    {
-        isOverheated = false;
-        currentDrillImprovement = drillPool[currentDrillIndex].improvementFactor;
-        
-        if (drillSpriteRenderer != null)
-        {
-            drillSpriteRenderer.color = originalDrillColor;
-        }
-        
-        if (overheatParticles != null)
-        {
-            overheatParticles.Stop();
-        }
-        
-        Debug.Log("Охлаждение восстановлено. Мощность нормальная");
     }
 }
