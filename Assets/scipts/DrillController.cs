@@ -62,7 +62,7 @@ public class DrillController : MonoBehaviour
     {
         if (platform == null || tilemap == null) return;
 
-        platform = platform.GetComponent<BoxCollider2D>();
+        platformCollider = platform.GetComponent<BoxCollider2D>();
         if (platformCollider == null) return;
 
         // Получаем границы коллайдера платформы в мировых координатах
