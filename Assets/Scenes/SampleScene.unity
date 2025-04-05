@@ -1260,7 +1260,6 @@ GameObject:
   - component: {fileID: 1378238129}
   - component: {fileID: 1378238128}
   - component: {fileID: 1378238127}
-  - component: {fileID: 1378238130}
   m_Layer: 0
   m_Name: under Drill
   m_TagString: SoftRock
@@ -1675,33 +1674,6 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
---- !u!50 &1378238130
-Rigidbody2D:
-  serializedVersion: 5
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1378238125}
-  m_BodyType: 2
-  m_Simulated: 1
-  m_UseFullKinematicContacts: 0
-  m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDamping: 0
-  m_AngularDamping: 0.05
-  m_GravityScale: 1
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_Interpolate: 0
-  m_SleepingMode: 1
-  m_CollisionDetection: 0
-  m_Constraints: 0
 --- !u!1 &1466045824
 GameObject:
   m_ObjectHideFlags: 0
@@ -1774,7 +1746,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: -1.039521, y: -0.22902739}
+  m_Offset: {x: -1.039521, y: -0.79558647}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -1784,7 +1756,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 7.1531224, y: 0.9120438}
+  m_Size: {x: 7.1531224, y: 2.045162}
   m_EdgeRadius: 0
 --- !u!50 &1466045828
 Rigidbody2D:
@@ -1966,10 +1938,6 @@ PrefabInstance:
     m_TransformParent: {fileID: 1466045825}
     m_Modifications:
     - target: {fileID: 730215537757204852, guid: 0cbc689149c4e8349b3c234f3f6d1c4c, type: 3}
-      propertyPath: tilemap
-      value: 
-      objectReference: {fileID: 1378238129}
-    - target: {fileID: 730215537757204852, guid: 0cbc689149c4e8349b3c234f3f6d1c4c, type: 3}
       propertyPath: platform
       value: 
       objectReference: {fileID: 1466045824}
@@ -2008,22 +1976,6 @@ PrefabInstance:
     - target: {fileID: 730215537757204852, guid: 0cbc689149c4e8349b3c234f3f6d1c4c, type: 3}
       propertyPath: drillPool.Array.data[1].improvementFactor
       value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 2207428628534041706, guid: 0cbc689149c4e8349b3c234f3f6d1c4c, type: 3}
-      propertyPath: m_Size.x
-      value: 2.2816153
-      objectReference: {fileID: 0}
-    - target: {fileID: 2207428628534041706, guid: 0cbc689149c4e8349b3c234f3f6d1c4c, type: 3}
-      propertyPath: m_Size.y
-      value: 0.7104496
-      objectReference: {fileID: 0}
-    - target: {fileID: 2207428628534041706, guid: 0cbc689149c4e8349b3c234f3f6d1c4c, type: 3}
-      propertyPath: m_Offset.x
-      value: 0.002637148
-      objectReference: {fileID: 0}
-    - target: {fileID: 2207428628534041706, guid: 0cbc689149c4e8349b3c234f3f6d1c4c, type: 3}
-      propertyPath: m_Offset.y
-      value: -0.5352307
       objectReference: {fileID: 0}
     - target: {fileID: 3513877255798808798, guid: 0cbc689149c4e8349b3c234f3f6d1c4c, type: 3}
       propertyPath: m_LocalScale.x
@@ -2075,10 +2027,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5025279397842169295, guid: 0cbc689149c4e8349b3c234f3f6d1c4c, type: 3}
       propertyPath: m_Name
-      value: Drill
-      objectReference: {fileID: 0}
-    - target: {fileID: 5025279397842169295, guid: 0cbc689149c4e8349b3c234f3f6d1c4c, type: 3}
-      propertyPath: m_TagString
       value: Drill
       objectReference: {fileID: 0}
     m_RemovedComponents: []
