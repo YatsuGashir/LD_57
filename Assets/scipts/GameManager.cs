@@ -1,14 +1,24 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    public static GameManager instance;
+    
     [SerializeField] private GameObject cam;
     [SerializeField] private GameObject platform;
     [SerializeField] private GameObject player;
     
     private float smoothSpeed = 0.125f;  // Скорость плавного следования камеры
     private GameObject trackingObj;
+    private Coroutine drillingCoroutine; // Храним ссылку на корутину
+
+
+    private void Awake()
+    {
+        instance = this;
+    }
 
     private void Start()
     {
@@ -20,9 +30,15 @@ public class GameManager : MonoBehaviour
 
     public void DrillingStage()
     {
+        // Останавливаем предыдущую корутину, если она есть
+        if (drillingCoroutine != null)
+        {
+            StopCoroutine(drillingCoroutine);
+        }
+        
         trackingObj = platform;
         // Стартуем бурение
-        StartCoroutine(DrillController.Instance.DrillDown());
+        drillingCoroutine = StartCoroutine(DrillController.Instance.DrillDown());
 
         // Включаем дрожание камеры
         CameraShake.instance.ShakeCamera(0.01f, true);  // Пример значения для дрожания
@@ -30,6 +46,13 @@ public class GameManager : MonoBehaviour
     
     public void MiningStage()
     {
+        /*// Останавливаем корутину, если она есть
+        if (drillingCoroutine != null)
+        {
+            StopCoroutine(drillingCoroutine);
+            drillingCoroutine = null;
+        }*/
+        
         trackingObj = player;
         // Останавливаем дрожание камеры
         CameraShake.instance.ShakeCamera(0f, false);  // Прекращаем дрожание, задавая нулевую амплитуду

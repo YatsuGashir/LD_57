@@ -8,6 +8,7 @@ public class ResourceCollector : MonoBehaviour
     [SerializeField] private float shakeDuration = 1f;
     [SerializeField] private float shakeIntensity = 0.2f;
     [SerializeField] private float fadeDuration = 0.5f;
+    private float ironSum = 0f;
 
     private void Update()
     {
@@ -84,9 +85,12 @@ public class ResourceCollector : MonoBehaviour
         // Уничтожаем руду только если она еще существует
         if (ore != null)
         {
+            DroneHUD.instance.ironSum += 1;
+            DroneHUD.instance.ResourcesUpdate();
             Destroy(ore);
         }
     }
+    
 
     private void OnDrawGizmosSelected()
     {
