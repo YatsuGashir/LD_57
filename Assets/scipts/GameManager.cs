@@ -15,9 +15,10 @@ public class GameManager : MonoBehaviour
 
         // Начинаем с бурения
         DrillingStage();
+        //MiningStage();
     }
 
-    private void DrillingStage()
+    public void DrillingStage()
     {
         trackingObj = platform;
         // Стартуем бурение
@@ -27,12 +28,9 @@ public class GameManager : MonoBehaviour
         CameraShake.instance.ShakeCamera(0.01f, true);  // Пример значения для дрожания
     }
     
-    private void MiningStage()
+    public void MiningStage()
     {
         trackingObj = player;
-        // Стартуем с дроном
-        StartCoroutine(DrillController.Instance.DrillDown());
-
         // Останавливаем дрожание камеры
         CameraShake.instance.ShakeCamera(0f, false);  // Прекращаем дрожание, задавая нулевую амплитуду
     }

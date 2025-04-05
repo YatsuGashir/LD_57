@@ -11,4 +11,9 @@ public class UpgradeManager : MonoBehaviour
             DrillController.Instance.SelectDrill(1);
         }
     }
+
+    public void DrillUpgrade()
+    {
+        DrillController.Instance.SelectDrill(1);
+    }
 }
