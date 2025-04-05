@@ -17,12 +17,21 @@ public class DrillController : MonoBehaviour
     [SerializeField] private float originalDrillSpeed = 0.005f;
     private float drillSpeed;
     private bool isDrilling = false;
-    private bool  isCounting = false;
+    private bool isCounting = false;
     private float currentTime;
+    private int currentDrillIndex = 0;
 
     [Header("Drill Pool")]
     public List<Drill> drillPool;
     public float currentDrillImprovement = 1f;
+
+    [Header("Overheat Settings")]
+    [SerializeField] private float overheatDrillMultiplier = 0.1f;
+    [SerializeField] private Color overheatColor = Color.red;
+    [SerializeField] private ParticleSystem overheatParticles;
+    [SerializeField] private AudioClip overheatSound;
+    private bool isOverheated = false;
+    private Color originalDrillColor;
 
     private void Awake()
     {
@@ -40,7 +49,7 @@ public class DrillController : MonoBehaviour
     {
         SelectDrill(0);
         drillSpeed = originalDrillSpeed;
-        //StartCoroutine(DrillDown());
+        originalDrillColor = drillSpriteRenderer.color;
     }
 
     public IEnumerator DrillDown()
@@ -48,7 +57,7 @@ public class DrillController : MonoBehaviour
         while (true)
         {
             MovePlatformDown();
-            CoolingSystem.instance.UpdateCoolingVolume(0.01f);
+            CoolingSystem.instance.UpdateCoolingVolume(0.1f);
             yield return new WaitForSeconds(0.023f);
         }
     }
@@ -98,7 +107,6 @@ public class DrillController : MonoBehaviour
                 if (tilemap.HasTile(cellPosition))
                 {
                     tilemap.SetTile(cellPosition, null);
-                    // Эффекты разрушения можно добавить здесь
                 }
             }
         }
@@ -127,8 +135,6 @@ public class DrillController : MonoBehaviour
 
     private IEnumerator HardDrill()
     {
-       
-    
         while (currentTime > 0)
         {
             DroneHUD.instance.TimeUpdate(currentTime);
@@ -136,13 +142,13 @@ public class DrillController : MonoBehaviour
             yield return null;
         }
 
-        // После завершения таймера:
         DroneHUD.instance.TimeUpdate(-1f);
-        drillSpeed = originalDrillSpeed; // Восстанавливаем полную скорость
-        CameraShake.instance?.ShakeCamera(0f, false); // Останавливаем тряску камеры
-        GameManager.instance.DrillingStage(); // Возвращаемся в режим бурения
-        DroneController.instance.isActive = false; // Деактивируем дрон
+        drillSpeed = originalDrillSpeed;
+        CameraShake.instance?.ShakeCamera(0f, false);
+        GameManager.instance.DrillingStage();
+        DroneController.instance.isActive = false;
     }
+
     private void OnTriggerExit2D(Collider2D other)
     {
         if (other.CompareTag("SoftRock"))
@@ -161,6 +167,7 @@ public class DrillController : MonoBehaviour
     {
         if (drillIndex < 0 || drillIndex >= drillPool.Count) return;
 
+        currentDrillIndex = drillIndex;
         Drill selectedDrill = drillPool[drillIndex];
         currentDrillImprovement = selectedDrill.improvementFactor;
         
@@ -170,5 +177,58 @@ public class DrillController : MonoBehaviour
         }
 
         Debug.Log($"Выбрана дрель: {selectedDrill.drillName}, Коэффициент улучшения: {currentDrillImprovement}");
+    }
+
+    public void CheckOverheat(float currentCooling)
+    {
+        if (currentCooling <= 0 && !isOverheated)
+        {
+            StartOverheat();
+        }
+        else if (currentCooling > 0 && isOverheated)
+        {
+            StopOverheat();
+        }
+    }
+
+    private void StartOverheat()
+    {
+        isOverheated = true;
+        currentDrillImprovement *= overheatDrillMultiplier;
+        
+        if (drillSpriteRenderer != null)
+        {
+            drillSpriteRenderer.color = overheatColor;
+        }
+        
+        if (overheatParticles != null)
+        {
+            overheatParticles.Play();
+        }
+        
+        if (overheatSound != null)
+        {
+            AudioSource.PlayClipAtPoint(overheatSound, transform.position);
+        }
+        
+        Debug.Log("Перегрев! Мощность снижена до 10%");
+    }
+
+    private void StopOverheat()
+    {
+        isOverheated = false;
+        currentDrillImprovement = drillPool[currentDrillIndex].improvementFactor;
+        
+        if (drillSpriteRenderer != null)
+        {
+            drillSpriteRenderer.color = originalDrillColor;
+        }
+        
+        if (overheatParticles != null)
+        {
+            overheatParticles.Stop();
+        }
+        
+        Debug.Log("Охлаждение восстановлено. Мощность нормальная");
     }
 }
