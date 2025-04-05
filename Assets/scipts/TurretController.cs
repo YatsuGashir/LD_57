@@ -9,16 +9,21 @@ public class TurretController : MonoBehaviour
 
     [Header("Настройки стрельбы")]
     public GameObject bulletPrefab;
-    public Transform firePoint;
+    public Transform firePoint; // Позиция, откуда вылетает пуля
     public float bulletSpeed = 10f;
+    public float fireRate = 0.1f; // Интервал между выстрелами (в секундах)
+    
+    private float nextFireTime = 0f;
 
     void Update()
     {
         RotateTowardsMouse();
 
-        if (Input.GetMouseButtonDown(0))
+        // Проверяем зажатие ЛКМ и таймер между выстрелами
+        if (Input.GetMouseButton(0) && Time.time >= nextFireTime)
         {
             Shoot();
+            nextFireTime = Time.time + fireRate; // Устанавливаем время следующего выстрела
         }
     }
 
@@ -45,6 +50,10 @@ public class TurretController : MonoBehaviour
     {
         GameObject bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
         Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
-        rb.velocity = firePoint.right * bulletSpeed;
+
+        if (rb != null)
+        {
+            rb.linearVelocity = firePoint.up * bulletSpeed;
+        }
     }
 }
