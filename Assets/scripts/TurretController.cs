@@ -6,6 +6,7 @@ public class TurretController : MonoBehaviour
     public float maxAngle = 45f; // максимум вверх/влево/вправо
     public Transform turretPivot; // часть, которая поворачивается
     public float maxRotationAngle = 45f; // Максимальный угол поворота в градусах
+    public float rotationSpeed = 5f; // Скорость поворота (градусов в секунду)
 
     [Header("Настройки стрельбы")]
     public GameObject bulletPrefab;
@@ -23,7 +24,7 @@ public class TurretController : MonoBehaviour
         if (Input.GetMouseButton(0) && Time.time >= nextFireTime)
         {
             Shoot();
-            nextFireTime = Time.time + fireRate; // Устанавливаем время следующего выстрела
+            nextFireTime = Time.time + fireRate;
         }
     }
 
@@ -34,16 +35,19 @@ public class TurretController : MonoBehaviour
         direction.z = 0f;
 
         // Угол между осью X и направлением на курсор
-        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        float targetAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg - 90f;
 
-        // Корректируем, потому что твоя турель смотрит вверх (а не вправо)
-        angle -= 90f;
+        // Ограничиваем угол вращения
+        targetAngle = Mathf.Clamp(targetAngle, -maxRotationAngle, maxRotationAngle);
 
-        // Ограничиваем угол вращения в пределах ±45° от вертикали
-        angle = Mathf.Clamp(angle, -maxRotationAngle, maxRotationAngle);
-
+        // Плавный поворот с заданной скоростью
+        float currentAngle = turretPivot.eulerAngles.z;
+        if (currentAngle > 180) currentAngle -= 360; // Корректируем угол для плавного вращения
+        
+        float newAngle = Mathf.MoveTowards(currentAngle, targetAngle, rotationSpeed * Time.deltaTime);
+        
         // Применяем вращение
-        turretPivot.rotation = Quaternion.Euler(0, 0, angle);
+        turretPivot.rotation = Quaternion.Euler(0, 0, newAngle);
     }
 
     void Shoot()
@@ -53,7 +57,7 @@ public class TurretController : MonoBehaviour
 
         if (rb != null)
         {
-            rb.linearVelocity = firePoint.up * bulletSpeed;
+            rb.velocity = firePoint.up * bulletSpeed;
         }
     }
 }
