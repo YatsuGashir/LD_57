@@ -34,6 +34,7 @@ public class DrillController : MonoBehaviour
     {
         SelectDrill(0);
         drillSpeed = originalDrillSpeed;
+        //StartCoroutine(DrillDown());
     }
 
     public IEnumerator DrillDown()
