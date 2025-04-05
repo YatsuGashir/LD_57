@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,102 +7,122 @@ public class DrillController : MonoBehaviour
 {
     public static DrillController Instance;
 
+    [Header("References")]
     [SerializeField] private GameObject platform;
+    [SerializeField] private Tilemap tilemap;
+    [SerializeField] private SpriteRenderer drillSpriteRenderer;
+    [SerializeField] private BoxCollider2D platformCollider;
+
+    [Header("Drill Settings")]
     [SerializeField] private float originalDrillSpeed = 0.005f;
     private float drillSpeed;
-    private SpriteRenderer sprite;
 
-    // Пул дрелей, который можно редактировать через инспектор
+    [Header("Drill Pool")]
     public List<Drill> drillPool;
-
-    // Коэффициент улучшения текущей дрели
     public float currentDrillImprovement = 1f;
-
-    // Спрайт, который будет отображаться для текущей дрели
-    public SpriteRenderer drillSpriteRenderer;
-
-    // Tilemap для удаления тайлов
-    [SerializeField] private Tilemap tilemap;
 
     private void Awake()
     {
-        Instance = this;
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 
     private void Start()
     {
         SelectDrill(0);
         drillSpeed = originalDrillSpeed;
+        StartCoroutine(DrillDown());
     }
 
     public IEnumerator DrillDown()
     {
-        while (true) // Эта корутина будет выполняться бесконечно
+        while (true)
         {
             MovePlatformDown();
             yield return new WaitForSeconds(0.023f);
         }
     }
-    
-  
 
     private void MovePlatformDown()
     {
-        var vector3 = platform.transform.position;
-        vector3.y = vector3.y - drillSpeed * currentDrillImprovement;
-        platform.transform.position = vector3;
-        
+        Vector3 newPosition = platform.transform.position;
+        newPosition.y -= drillSpeed * currentDrillImprovement;
+        platform.transform.position = newPosition;
+
         CheckAndRemoveTilesUnderPlatform();
     }
-    
+
     private void CheckAndRemoveTilesUnderPlatform()
     {
-        BoxCollider2D platformCollider = platform.GetComponent<BoxCollider2D>();
-        if (platformCollider == null || tilemap == null) return;
+        if (platform == null || tilemap == null) return;
 
-        Bounds bounds = platformCollider.bounds;
-        Vector2 bottomLeft = new Vector2(bounds.min.x, bounds.min.y - 0.1f);
-        Vector2 bottomRight = new Vector2(bounds.max.x, bounds.min.y - 0.1f);
+        platform = platform.GetComponent<BoxCollider2D>();
+        if (platformCollider == null) return;
 
-        Vector3Int leftCell = tilemap.WorldToCell(bottomLeft);
-        Vector3Int rightCell = tilemap.WorldToCell(bottomRight);
+        // Получаем границы коллайдера платформы в мировых координатах
+        Bounds platformBounds = platformCollider.bounds;
+    
+        // Определяем область проверки (немного ниже платформы)
+        float checkDepth = 0.2f;
+        Vector3 checkStart = platformBounds.min - new Vector3(0, checkDepth, 0);
+        Vector3 checkEnd = new Vector3(platformBounds.max.x, platformBounds.min.y - checkDepth, 0);
 
-        for (int x = leftCell.x; x <= rightCell.x; x++)
+        // Переводим в координаты тайлмапа
+        Vector3Int startCell = tilemap.WorldToCell(checkStart);
+        Vector3Int endCell = tilemap.WorldToCell(checkEnd);
+
+        // Проходим по всем ячейкам в области проверки
+        for (int x = startCell.x; x <= endCell.x; x++)
         {
-            Vector3Int cell = new Vector3Int(x, leftCell.y, leftCell.z);
-            if (tilemap.HasTile(cell))
+            for (int y = startCell.y; y <= endCell.y; y++)
             {
-                tilemap.SetTile(cell, null);
+                Vector3Int cellPosition = new Vector3Int(x, y, startCell.z);
+                if (tilemap.HasTile(cellPosition))
+                {
+                    tilemap.SetTile(cellPosition, null);
+                    // Здесь можно добавить эффекты разрушения
+                }
             }
         }
     }
+
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("SoftRock"))
         {
             Debug.Log("Бур замедлен из-за земли");
             drillSpeed *= 0.5f;
-            CameraShake.instance.ShakeCamera(0.07f, true);
+            CameraShake.instance?.ShakeCamera(0.07f, true);
         }
-
-       
-        
     }
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        drillSpeed = originalDrillSpeed;
-        CameraShake.instance.ShakeCamera(0.01f, true);
+        if (other.CompareTag("SoftRock"))
+        {
+            drillSpeed = originalDrillSpeed;
+            CameraShake.instance?.ShakeCamera(0.01f, true);
+        }
     }
 
-
-
-    // Выбор дрели для использования
     public void SelectDrill(int drillIndex)
     {
+        if (drillIndex < 0 || drillIndex >= drillPool.Count) return;
+
         Drill selectedDrill = drillPool[drillIndex];
         currentDrillImprovement = selectedDrill.improvementFactor;
-        drillSpriteRenderer.sprite = selectedDrill.drillSprite;
+        
+        if (drillSpriteRenderer != null)
+        {
+            drillSpriteRenderer.sprite = selectedDrill.drillSprite;
+        }
+
         Debug.Log($"Выбрана дрель: {selectedDrill.drillName}, Коэффициент улучшения: {currentDrillImprovement}");
     }
 }
