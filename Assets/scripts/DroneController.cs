@@ -5,25 +5,27 @@ public class DroneController : MonoBehaviour
 {
     public static DroneController instance;
     
-    [Header("Настройки движения")]
+    [Header("Movement Settings")]
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private SpriteRenderer spriteRenderer;
     [SerializeField] private GameObject box;
     
-    [Header("Настройки добычи")]
-    [SerializeField] private float miningRange = 1.5f; // Дистанция для начала добычи
-    [SerializeField] private float miningTime = 0.5f; // Время добычи одного тайла
-    [SerializeField] private float shakeIntensity = 0.1f; // Сила тряски
+    [Header("Mining Settings")]
+    [SerializeField] private float miningRange = 1.5f;
+    [SerializeField] private float miningTime = 0.5f;
+    [SerializeField] private float shakeIntensity = 0.1f;
+    [SerializeField] private Tilemap oreTilemap;
+    [SerializeField] private TileBase oreTile;
     
-    [Header("Настройки ввода")]
+    [Header("Input Settings")]
     [SerializeField] private float modeSwitchCooldown = 0.5f;
     
     private Vector3 targetPosition;
     public bool isActive = false;
     private float lastSwitchTime = -1f;
-    private GameObject currentOreTarget;
+    private Vector3Int currentMiningCell;
     private float miningTimer;
-    private Vector3 originalOrePosition;
+    private Vector3 originalTilePosition;
 
     private void Awake()
     {
@@ -32,104 +34,88 @@ public class DroneController : MonoBehaviour
 
     private void Update()
     {
+        HandleModeSwitch();
+        HandleMovement();
+        
+        if(isActive)
+        {
+            FindOreTile();
+            MineOre();
+        }
+    }
+
+    private void HandleModeSwitch()
+    {
         if (Input.GetMouseButton(1) && Time.time - lastSwitchTime >= modeSwitchCooldown)
         {
             lastSwitchTime = Time.time;
+            isActive = !isActive;
             
-            if (isActive)
-            {
-                GameManager.instance.DrillingStage();
-                isActive = false;
-            }
-            else
-            {
-                GameManager.instance.MiningStage();
-                isActive = true;
-            }
+            if(isActive) GameManager.instance.MiningStage();
+            else GameManager.instance.DrillingStage();
         }
-
-        if (isActive)
-        {
-            Vector3 cursorPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            cursorPosition.z = 0f;
-            targetPosition = cursorPosition;
-            
-            // Поиск ближайшей руды
-            FindNearestOre();
-            
-            // Если есть цель для добычи и в радиусе
-            if (currentOreTarget != null && 
-                Vector3.Distance(transform.position, currentOreTarget.transform.position) <= miningRange)
-            {
-                MineOre();
-            }
-            else
-            {
-                miningTimer = 0f;
-            }
-        }
-        else
-        {
-            Vector3 cursorPosition = box.transform.position;
-            cursorPosition.z = 0f;
-            targetPosition = cursorPosition;
-        }
-
-        MoveTowardsTarget();
     }
 
-    private void FindNearestOre()
+    private void HandleMovement()
     {
-        Collider2D[] ores = Physics2D.OverlapCircleAll(transform.position, miningRange * 2f);
-        float closestDistance = Mathf.Infinity;
-        GameObject closestOre = null;
+        targetPosition = isActive ? 
+            Camera.main.ScreenToWorldPoint(Input.mousePosition) : 
+            box.transform.position;
+        
+        targetPosition.z = 0;
+        transform.position = Vector3.MoveTowards(transform.position, targetPosition, moveSpeed * Time.deltaTime);
+    }
 
-        foreach (Collider2D ore in ores)
+    private void FindOreTile()
+    {
+        Vector3Int cellPosition = oreTilemap.WorldToCell(transform.position);
+        
+        // Проверяем 3x3 область вокруг дрона
+        for(int x = -1; x <= 1; x++)
         {
-            if (ore.CompareTag("Ore"))
+            for(int y = -1; y <= 1; y++)
             {
-                float distance = Vector3.Distance(transform.position, ore.transform.position);
-                if (distance < closestDistance)
+                Vector3Int checkCell = cellPosition + new Vector3Int(x, y, 0);
+                
+                if(oreTilemap.GetTile(checkCell) == oreTile && 
+                   Vector3.Distance(transform.position, oreTilemap.GetCellCenterWorld(checkCell)) <= miningRange)
                 {
-                    closestDistance = distance;
-                    closestOre = ore.gameObject;
+                    currentMiningCell = checkCell;
+                    originalTilePosition = oreTilemap.GetCellCenterWorld(checkCell);
+                    return;
                 }
             }
         }
-
-        currentOreTarget = closestOre;
-        if (currentOreTarget != null)
-        {
-            originalOrePosition = currentOreTarget.transform.position;
-        }
+        
+        // Если ничего не нашли
+        currentMiningCell = new Vector3Int(-1000, -1000, 0);
     }
 
     private void MineOre()
     {
+        if(currentMiningCell.x == -1000) return;
+        
         miningTimer += Time.deltaTime;
         
         // Эффект тряски
-        if (currentOreTarget != null)
+        Vector3 shakeOffset = new Vector3(
+            Random.Range(-shakeIntensity, shakeIntensity),
+            Random.Range(-shakeIntensity, shakeIntensity),
+            0);
+        
+        oreTilemap.transform.position = originalTilePosition + shakeOffset;
+        
+        if(miningTimer >= miningTime)
         {
-            float shakeX = originalOrePosition.x + Random.Range(-shakeIntensity, shakeIntensity);
-            float shakeY = originalOrePosition.y + Random.Range(-shakeIntensity, shakeIntensity);
-            currentOreTarget.transform.position = new Vector3(shakeX, shakeY, originalOrePosition.z);
-        }
-
-        // Когда время добычи истекло
-        if (miningTimer >= miningTime && currentOreTarget != null)
-        {
-            Destroy(currentOreTarget);
-            currentOreTarget = null;
+            oreTilemap.SetTile(currentMiningCell, null);
             miningTimer = 0f;
+            oreTilemap.transform.position = originalTilePosition;
             
-            // Здесь можно добавить эффекты/звуки/награду за добычу
+            // Здесь можно добавить:
+            // 1. Эффект разрушения
+            // 2. Добавление ресурсов
+            // 3. Звук добычи
         }
-    }
-
-    private void MoveTowardsTarget()
-    {
-        transform.position = Vector3.MoveTowards(transform.position, targetPosition, moveSpeed * Time.deltaTime);
     }
 
     private void OnDrawGizmosSelected()
