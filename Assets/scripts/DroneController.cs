@@ -168,4 +168,5 @@ public class DroneController : MonoBehaviour
             CoolingSystem.instance.RefillCooling(2f); // 2 единицы за кадр
         }
     }
+    
 }

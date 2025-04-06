@@ -2,28 +2,45 @@ using UnityEngine;
 
 public class TurretController : MonoBehaviour
 {
+    public static TurretController instance;
+
     [Header("Настройки поворота")]
-    public float maxAngle = 45f; // максимум вверх/влево/вправо
-    public Transform turretPivot; // часть, которая поворачивается
-    public float maxRotationAngle = 45f; // Максимальный угол поворота в градусах
-    public float rotationSpeed = 5f; // Скорость поворота (градусов в секунду)
+    public float maxAngle = 45f;
+    public Transform turretPivot;
+    public float maxRotationAngle = 45f;
+    public float rotationSpeed = 5f;
 
     [Header("Настройки стрельбы")]
     public GameObject bulletPrefab;
-    public Transform firePoint; // Позиция, откуда вылетает пуля
-    public float bulletSpeed = 10f;
-    public float fireRate = 0.1f; // Интервал между выстрелами (в секундах)
-    
+    public Transform firePoint;
+    public float baseBulletSpeed = 10f;
+    public float baseFireRate = 0.1f;
+
+    private float fireRate;
+    private float bulletSpeed;
     private float nextFireTime = 0f;
 
-    void Update()
+    [Header("Улучшения турели")]
+    public TurretUpgrade[] upgrades;
+    [SerializeField] private SpriteRenderer turretRenderer;
+    private int currentUpgradeIndex = 0;
+
+    private void Awake()
     {
-        // Проверяем активную стадию перед обработкой ввода
+        instance = this;
+    }
+
+    void Start()
+    {
+        ApplyUpgrade(currentUpgradeIndex);
+    }
+
+    void FixedUpdate()
+    {
         if (GameManager.instance == null || GameManager.instance.isDrillingActive)
         {
             RotateTowardsMouse();
-            
-            // Проверяем зажатие ЛКМ и таймер между выстрелами
+
             if (Input.GetMouseButton(0) && Time.time >= nextFireTime)
             {
                 Shoot();
@@ -38,19 +55,13 @@ public class TurretController : MonoBehaviour
         Vector3 direction = mouseWorldPos - turretPivot.position;
         direction.z = 0f;
 
-        // Угол между осью X и направлением на курсор
         float targetAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg - 90f;
-
-        // Ограничиваем угол вращения
         targetAngle = Mathf.Clamp(targetAngle, -maxRotationAngle, maxRotationAngle);
 
-        // Плавный поворот с заданной скоростью
         float currentAngle = turretPivot.eulerAngles.z;
-        if (currentAngle > 180) currentAngle -= 360; // Корректируем угол для плавного вращения
-        
+        if (currentAngle > 180) currentAngle -= 360;
+
         float newAngle = Mathf.MoveTowards(currentAngle, targetAngle, rotationSpeed * Time.deltaTime);
-        
-        // Применяем вращение
         turretPivot.rotation = Quaternion.Euler(0, 0, newAngle);
     }
 
@@ -63,5 +74,27 @@ public class TurretController : MonoBehaviour
         {
             rb.linearVelocity = firePoint.up * bulletSpeed;
         }
+    }
+
+    public void UpgradeTurret(int upgradeIndex)
+    {
+        if (upgradeIndex < 0 || upgradeIndex >= upgrades.Length) return;
+
+        currentUpgradeIndex = upgradeIndex;
+        ApplyUpgrade(upgradeIndex);
+    }
+
+    private void ApplyUpgrade(int upgradeIndex)
+    {
+        TurretUpgrade upgrade = upgrades[upgradeIndex];
+        fireRate = baseFireRate / upgrade.fireRateMultiplier;
+        bulletSpeed = baseBulletSpeed * upgrade.bulletSpeedMultiplier;
+
+        if (turretRenderer != null && upgrade.upgradeSprite != null)
+        {
+            turretRenderer.sprite = upgrade.upgradeSprite;
+        }
+
+        Debug.Log($"Турель улучшена: {upgrade.upgradeName}");
     }
 }

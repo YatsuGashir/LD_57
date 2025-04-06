@@ -3,11 +3,22 @@ using UnityEngine;
 public class CoolingSystem : MonoBehaviour
 {
     public static CoolingSystem instance;
-    
-    [SerializeField] private GameObject coolingSystem;
+
+    [Header("UI элементы")]
+    [SerializeField] private GameObject coolingSystemUI; // Ссылка на UI охладителя
     [SerializeField] private float coolingVolumeStart = 100f;
-    [SerializeField] private float refillSpeed = 20f;
+    [SerializeField] private float baseRefillSpeed = 20f;  // Базовая скорость пополнения
+    [SerializeField] private float baseDrainSpeed = 0.1f;   // Базовая скорость расхода
+    [SerializeField] private SpriteRenderer coolingSystemSprite; // Сам спрайт объекта охладителя
+
+
     public float coolingVolume { get; private set; }
+
+    [Header("Система улучшений охладителя")]
+    public CoolingSystemUpgrade[] upgrades; // Массив улучшений
+    private int currentUpgradeIndex = 0; // Индекс текущего улучшения
+    private float refillSpeed;  // Текущая скорость пополнения
+    private float drainSpeed;   // Текущая скорость расхода
 
     private void Awake()
     {
@@ -16,22 +27,49 @@ public class CoolingSystem : MonoBehaviour
 
     void Start()
     {
-        coolingSystem.GetComponent<PlatformBar>().SetMaxBar(coolingVolumeStart);
+        coolingSystemUI.GetComponent<PlatformBar>().SetMaxBar(coolingVolumeStart); // Устанавливаем максимальное значение охлаждения
         coolingVolume = coolingVolumeStart;
+        ApplyUpgrade(currentUpgradeIndex); // Применяем первое улучшение
     }
 
-    // Измененный метод для расхода
+    // Применяем улучшение
+    private void ApplyUpgrade(int upgradeIndex)
+    {
+        if (upgradeIndex < 0 || upgradeIndex >= upgrades.Length) return;
+
+        CoolingSystemUpgrade upgrade = upgrades[upgradeIndex];
+        refillSpeed = baseRefillSpeed * upgrade.refillSpeedMultiplier;
+        drainSpeed = baseDrainSpeed * upgrade.drainSpeedMultiplier;
+
+        if (coolingSystemSprite != null && upgrade.upgradeSprite != null)
+        {
+            coolingSystemSprite.sprite = upgrade.upgradeSprite;
+        }
+
+        Debug.Log($"Охладитель улучшен: {upgrade.upgradeName}");
+    }
+
+
+    // Изменённый метод для расхода охлаждающей жидкости
     public void DrainCooling(float amount)
     {
-        coolingVolume = Mathf.Clamp(coolingVolume - amount, 0, coolingVolumeStart);
-        coolingSystem.GetComponent<PlatformBar>().SetBar(coolingVolume);
+        coolingVolume = Mathf.Clamp(coolingVolume - (amount * drainSpeed), 0, coolingVolumeStart);
+        coolingSystemUI.GetComponent<PlatformBar>().SetBar(coolingVolume);  // Обновляем UI охлаждения
         DrillController.Instance.CheckOverheat(coolingVolume);
     }
 
-    // Метод для пополнения
+    // Метод для пополнения охлаждающей жидкости
     public void RefillCooling(float amount)
     {
-        coolingVolume = Mathf.Clamp(coolingVolume + amount, 0, coolingVolumeStart);
-        coolingSystem.GetComponent<PlatformBar>().SetBar(coolingVolume);
+        coolingVolume = Mathf.Clamp(coolingVolume + (amount * refillSpeed), 0, coolingVolumeStart);
+        coolingSystemUI.GetComponent<PlatformBar>().SetBar(coolingVolume);  // Обновляем UI охлаждения
+    }
+
+    // Метод для смены улучшения
+    public void UpgradeCoolingSystem(int upgradeIndex)
+    {
+        if (upgradeIndex < 0 || upgradeIndex >= upgrades.Length) return;
+        currentUpgradeIndex = upgradeIndex;
+        ApplyUpgrade(upgradeIndex);  // Применяем новое улучшение
     }
 }
