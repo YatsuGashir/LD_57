@@ -37,7 +37,10 @@ public class DroneController : MonoBehaviour
         HandleMovement();
         CheckAndDestroyOre();
     }
-
+    private void FixedUpdate()
+    {
+        MoveTowardsTarget();
+    }
     private void HandleModeSwitch()
     {
         if (Input.GetMouseButton(1) && Time.time - lastSwitchTime >= modeSwitchCooldown)
@@ -62,10 +65,9 @@ public class DroneController : MonoBehaviour
         Vector3 cursorPosition = isActive ? 
             Camera.main.ScreenToWorldPoint(Input.mousePosition) : 
             box.transform.position;
-        
+    
         cursorPosition.z = 0f;
         targetPosition = cursorPosition;
-        MoveTowardsTarget();
     }
 
     private void CheckAndDestroyOre()
