@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Blastshroom_0: -5993958233653960340
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
