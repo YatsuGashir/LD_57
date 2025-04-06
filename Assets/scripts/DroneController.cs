@@ -1,60 +1,154 @@
 using UnityEngine;
+using UnityEngine.Tilemaps;
+using System.Collections;
 
 public class DroneController : MonoBehaviour
 {
- [SerializeField] private float moveSpeed = 5f; // Скорость движения дрона
-    [SerializeField] private float rotationSpeed = 100f; // Скорость вращения дрона
-    [SerializeField] private float orbitRadius = 2f; // Радиус орбиты вокруг точки
-    [SerializeField] private float orbitSpeed = 50f; // Скорость орбитального движения
-    [SerializeField] private float orbitZoneRadius = 1f; // Радиус зоны для включения орбитального режима
+    public static DroneController instance;
+    
+    [Header("Настройки движения")]
+    [SerializeField] private float moveSpeed = 5f;
+    [SerializeField] private SpriteRenderer spriteRenderer;
+    [SerializeField] private GameObject box;
+    [SerializeField] private Tilemap oreTilemap;
+    [SerializeField] private float checkRadius = 0.5f;
+    
+    [Header("Настройки анимации разрушения")]
+    [SerializeField] private float shakeDuration = 0.3f;
+    [SerializeField] private float fadeDuration = 0.5f;
+    [SerializeField] private float shakeIntensity = 0.1f;
+    [SerializeField] private GameObject destroyEffect;
+    
+    [Header("Настройки ввода")]
+    [SerializeField] private float modeSwitchCooldown = 0.5f;
 
     private Vector3 targetPosition;
-    private bool isOrbiting = false;
+    public bool isActive = false;
+    private float lastSwitchTime = -1f;
+
+    private void Awake()
+    {
+        instance = this;
+    }
 
     private void Update()
     {
-        // Получаем позицию курсора на экране и конвертируем её в мировые координаты
-        Vector3 cursorPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        cursorPosition.z = 0f;  // Убираем смещение по оси Z, чтобы работать в 2D пространстве
+        HandleModeSwitch();
+        HandleMovement();
+        CheckAndDestroyOre();
+    }
+
+    private void HandleModeSwitch()
+    {
+        if (Input.GetMouseButton(1) && Time.time - lastSwitchTime >= modeSwitchCooldown)
+        {
+            lastSwitchTime = Time.time;
+            isActive = !isActive;
+        
+            // Заменяем SwitchStage(isActive) на прямые вызовы
+            if (isActive)
+            {
+                GameManager.instance.MiningStage();
+            }
+            else
+            {
+                GameManager.instance.DrillingStage();
+            }
+        }
+    }
+
+    private void HandleMovement()
+    {
+        Vector3 cursorPosition = isActive ? 
+            Camera.main.ScreenToWorldPoint(Input.mousePosition) : 
+            box.transform.position;
+        
+        cursorPosition.z = 0f;
         targetPosition = cursorPosition;
         MoveTowardsTarget();
-        // Если дрон не орбитирует, он должен двигаться к точке
-        /*if (!isOrbiting)
+    }
+
+    private void CheckAndDestroyOre()
+    {
+        Vector3Int currentCell = oreTilemap.WorldToCell(transform.position);
+        
+        for (int x = -1; x <= 1; x++)
         {
-            targetPosition = cursorPosition;
-            MoveTowardsTarget();
+            for (int y = -1; y <= 1; y++)
+            {
+                Vector3Int checkPosition = new Vector3Int(
+                    currentCell.x + x,
+                    currentCell.y + y,
+                    currentCell.z
+                );
+
+                TileBase tile = oreTilemap.GetTile(checkPosition);
+                if (tile != null)
+                {
+                    StartCoroutine(PlayDestroyAnimation(
+                        oreTilemap.CellToWorld(checkPosition),
+                        (tile as Tile).sprite
+                    ));
+                    
+                    oreTilemap.SetTile(checkPosition, null);
+                    return;
+                }
+            }
         }
-        else
+    }
+
+    private IEnumerator PlayDestroyAnimation(Vector3 position, Sprite oreSprite)
+    {
+        // Создаем временный объект для анимации
+        GameObject tempOre = new GameObject("TempOre");
+        tempOre.transform.position = position;
+        SpriteRenderer renderer = tempOre.AddComponent<SpriteRenderer>();
+        renderer.sprite = oreSprite;
+        renderer.sortingOrder = 1;
+
+        // Эффект дрожания
+        float shakeTimer = 0f;
+        Vector3 startPosition = tempOre.transform.position;
+        
+        while (shakeTimer < shakeDuration)
         {
-            // Если дрон орбитирует, начинаем орбитальное движение вокруг цели
-            OrbitAroundTarget(cursorPosition);
-        }*/
+            shakeTimer += Time.deltaTime;
+            tempOre.transform.position = startPosition + Random.insideUnitSphere * shakeIntensity;
+            yield return null;
+        }
+        tempOre.transform.position = startPosition;
+
+        // Эффект исчезновения
+        float fadeTimer = 0f;
+        Color startColor = renderer.color;
+        
+        while (fadeTimer < fadeDuration)
+        {
+            fadeTimer += Time.deltaTime;
+            renderer.color = new Color(
+                startColor.r,
+                startColor.g,
+                startColor.b,
+                Mathf.Lerp(1f, 0f, fadeTimer / fadeDuration)
+            );
+            yield return null;
+        }
+
+        // Визуальные эффекты
+        if (destroyEffect != null)
+        {
+            Instantiate(destroyEffect, position, Quaternion.identity);
+        }
+
+        Destroy(tempOre);
     }
 
     private void MoveTowardsTarget()
     {
-        // Двигаем дрон в сторону курсора
-        transform.position = Vector3.MoveTowards(transform.position, targetPosition, moveSpeed * Time.deltaTime);
-
-        // Проверяем, попал ли дрон в радиус орбитальной зоны
-        if (Vector3.Distance(transform.position, targetPosition) < orbitZoneRadius)
-        {
-            isOrbiting = true;  // Начинаем орбитальное движение
-        }
+        transform.position = Vector3.MoveTowards(
+            transform.position, 
+            targetPosition, 
+            moveSpeed * Time.deltaTime
+        );
     }
-
-   /*private void OrbitAroundTarget(Vector3 cursorPosition)
-    {
-        // Крутим дрон вокруг целевой точки (позиции курсора)
-        float angle = orbitSpeed * Time.deltaTime;
-        Vector3 offset = new Vector3(Mathf.Sin(Time.time * angle) * orbitRadius, Mathf.Cos(Time.time * angle) * orbitRadius, 0);
-        transform.position = cursorPosition + offset;
-        
-
-        // Если дрон выходит из радиуса орбитальной зоны, снова начинаем следовать за курсором
-        if (Vector3.Distance(transform.position, cursorPosition) > orbitZoneRadius)
-        {
-            isOrbiting = false;
-        }
-    }*/
 }
