@@ -3,32 +3,32 @@ using UnityEngine;
 public class BulletController : MonoBehaviour
 {
     public float lifeTime = 3f;
-    public int damage = 1;
-    public string enemyTag = "Enemy";
+    public int damage = 10; // Урон пули
+    public string enemyTag = "Enemy"; // Тег врага
 
     void Start()
     {
-        // Уничтожить пулю через несколько секунд (если никуда не врезалась)
+        // Уничтожить пулю через несколько секунд (если не столкнулась с чем-то)
         Destroy(gameObject, lifeTime);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        // Если это враг
+        // Проверяем, если пуля столкнулась с врагом
         if (collision.CompareTag(enemyTag))
         {
-            // Пробуем получить компонент здоровья
-            //EnemyHealth enemyHealth = collision.GetComponent<EnemyHealth>();
-            /*if (enemyHealth != null)
+            // Наносим урон врагу
+            EnemyHealth enemyHealth = collision.GetComponent<EnemyHealth>();
+            if (enemyHealth != null)
             {
-                enemyHealth.TakeDamage(damage);
-            }*/
+                enemyHealth.TakeDamage(damage); // Наносим урон
+            }
 
             Destroy(gameObject); // Уничтожаем пулю
         }
         else if (collision.CompareTag("Wall"))
         {
-            Destroy(gameObject); // Врезалась в стену — уничтожить
+            Destroy(gameObject); // Уничтожаем пулю при столкновении со стеной
         }
     }
 }
