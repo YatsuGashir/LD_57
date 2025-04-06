@@ -10,6 +10,8 @@ TagManager:
   - CoolingStation
   - Enemy
   - Wall
+  - Platform
+  - Bullet
   layers:
   - Default
   - TransparentFX
