@@ -107,7 +107,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: -289299948878437816, guid: 7d09a9d866e91d84c826fef6d098a47a, type: 3}
+  m_Sprite: {fileID: -5993958233653960340, guid: 7af4e209de881094bbe2d2c4aa5ba861, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -130,11 +130,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee4168c583e2072438fec8a47041841a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 10
-  damage: 20
+  speed: 5
+  damage: 4
   explosionEffect: {fileID: 0}
-  spiralStartRadius: 5
-  spiralRotationSpeed: 20
+  spiralStartRadius: 4
+  spiralRotationSpeed: 5
   spiralTighteningSpeed: 0.1
   spiralForwardOffset: 2
 --- !u!61 &-5882261384184163592
@@ -175,7 +175,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1.84, y: 2.3}
+    oldSize: {x: 0.7, y: 0.89}
     newSize: {x: 7.36, y: 9.2}
     adaptiveTilingThreshold: 0.5
     drawMode: 0

@@ -57,12 +57,13 @@ public class EnemyRammer : MonoBehaviour
         transform.Translate(moveDir * speed * Time.deltaTime, Space.World);
 
         // Поворачиваем врага по движению
-        float rotateAngle = Mathf.Atan2(moveDir.y, moveDir.x) * Mathf.Rad2Deg - 90f;
+       /* float rotateAngle = Mathf.Atan2(moveDir.y, moveDir.x) * Mathf.Rad2Deg - 90f;
         transform.rotation = Quaternion.Lerp(
             transform.rotation,
             Quaternion.AngleAxis(rotateAngle, Vector3.forward),
             5f * Time.deltaTime
-        );
+        );*/
+       
     }
 
     void OnTriggerEnter2D(Collider2D other)
