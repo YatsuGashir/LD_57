@@ -1064,10 +1064,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 5
+<<<<<<< Updated upstream
   rotationSpeed: 100
   orbitRadius: 2
   orbitSpeed: 50
   orbitZoneRadius: 1
+=======
+  spriteRenderer: {fileID: 0}
+  box: {fileID: 0}
+  oreTilemap: {fileID: 0}
+  checkRadius: 0.5
+  shakeDuration: 0.3
+  fadeDuration: 0.5
+  shakeIntensity: 0.1
+  destroyEffect: {fileID: 0}
+  modeSwitchCooldown: 0.5
+  isActive: 0
+>>>>>>> Stashed changes
 --- !u!1 &820945735
 GameObject:
   m_ObjectHideFlags: 0
