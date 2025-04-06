@@ -9,6 +9,7 @@ TagManager:
   - Ore
   - CoolingStation
   - Enemy
+  - Wall
   layers:
   - Default
   - TransparentFX

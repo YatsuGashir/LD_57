@@ -15,7 +15,7 @@ public class GameManager : MonoBehaviour
     public bool isDrillingActive { get; private set; }
 
     private Vector3 miningCamOffset = new Vector3(0f, 0f, -10f);
-    private Vector3 drillingCamOffset = new Vector3(0f, 3f, -10f);
+    private Vector3 drillingCamOffset = new Vector3(0f, 5f, -10f);
 
     private float miningZoom = 2f;
     private float drillingZoom = 4f;

@@ -1,30 +1,32 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Tilemaps;
-using System.Collections;
 
 public class DroneController : MonoBehaviour
 {
     public static DroneController instance;
-    
+
     [Header("Настройки движения")]
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private SpriteRenderer spriteRenderer;
     [SerializeField] private GameObject box;
     [SerializeField] private Tilemap oreTilemap;
     [SerializeField] private float checkRadius = 0.5f;
-    
+
     [Header("Настройки анимации разрушения")]
     [SerializeField] private float shakeDuration = 0.3f;
     [SerializeField] private float fadeDuration = 0.5f;
     [SerializeField] private float shakeIntensity = 0.1f;
     [SerializeField] private GameObject destroyEffect;
-    
+
     [Header("Настройки ввода")]
     [SerializeField] private float modeSwitchCooldown = 0.5f;
 
     private Vector3 targetPosition;
     public bool isActive = false;
     private float lastSwitchTime = -1f;
+
+    public int oreCount = 0; // Счётчик руды
 
     private void Awake()
     {
@@ -47,7 +49,7 @@ public class DroneController : MonoBehaviour
         {
             lastSwitchTime = Time.time;
             isActive = !isActive;
-        
+
             // Заменяем SwitchStage(isActive) на прямые вызовы
             if (isActive)
             {
@@ -65,7 +67,7 @@ public class DroneController : MonoBehaviour
         Vector3 cursorPosition = isActive ? 
             Camera.main.ScreenToWorldPoint(Input.mousePosition) : 
             box.transform.position;
-    
+
         cursorPosition.z = 0f;
         targetPosition = cursorPosition;
     }
@@ -73,7 +75,7 @@ public class DroneController : MonoBehaviour
     private void CheckAndDestroyOre()
     {
         Vector3Int currentCell = oreTilemap.WorldToCell(transform.position);
-        
+
         for (int x = -1; x <= 1; x++)
         {
             for (int y = -1; y <= 1; y++)
@@ -91,8 +93,13 @@ public class DroneController : MonoBehaviour
                         oreTilemap.CellToWorld(checkPosition),
                         (tile as Tile).sprite
                     ));
-                    
+
                     oreTilemap.SetTile(checkPosition, null);
+
+                    // Увеличиваем счётчик руды и передаем её в UpgradeManager
+                    oreCount++;
+                    UpgradeManager.instance.AddOre(1);  // 1 руда добавляется за разрушение
+
                     return;
                 }
             }
@@ -111,7 +118,7 @@ public class DroneController : MonoBehaviour
         // Эффект дрожания
         float shakeTimer = 0f;
         Vector3 startPosition = tempOre.transform.position;
-        
+
         while (shakeTimer < shakeDuration)
         {
             shakeTimer += Time.deltaTime;
@@ -123,7 +130,7 @@ public class DroneController : MonoBehaviour
         // Эффект исчезновения
         float fadeTimer = 0f;
         Color startColor = renderer.color;
-        
+
         while (fadeTimer < fadeDuration)
         {
             fadeTimer += Time.deltaTime;
@@ -153,7 +160,7 @@ public class DroneController : MonoBehaviour
             moveSpeed * Time.deltaTime
         );
     }
-    
+
     private void OnTriggerStay2D(Collider2D other)
     {
         if (other.CompareTag("CoolingStation"))
@@ -161,4 +168,5 @@ public class DroneController : MonoBehaviour
             CoolingSystem.instance.RefillCooling(2f); // 2 единицы за кадр
         }
     }
+    
 }
