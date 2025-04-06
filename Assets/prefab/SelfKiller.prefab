@@ -130,9 +130,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee4168c583e2072438fec8a47041841a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 7
+  speed: 10
   damage: 20
   explosionEffect: {fileID: 0}
+  spiralStartRadius: 5
+  spiralRotationSpeed: 20
+  spiralTighteningSpeed: 0.1
+  spiralForwardOffset: 2
 --- !u!61 &-5882261384184163592
 BoxCollider2D:
   m_ObjectHideFlags: 0

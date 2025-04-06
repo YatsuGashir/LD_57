@@ -102,7 +102,7 @@ GameObject:
   - component: {fileID: 4406496189256335021}
   m_Layer: 0
   m_Name: EnemyShooter
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -198,6 +198,8 @@ MonoBehaviour:
   minDistance: 2
   maxDistance: 5
   stoppingDistance: 3
+  sideMovementSpeed: 2
+  directionChangeInterval: 2
 --- !u!50 &-3064771506533425639
 Rigidbody2D:
   serializedVersion: 5
