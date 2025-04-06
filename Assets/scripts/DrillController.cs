@@ -20,6 +20,7 @@ public class DrillController : MonoBehaviour
     private bool isCounting = false;
     private float currentTime;
     private int currentDrillIndex = 0;
+    private float fallSpeed = 0.1f;
 
     [Header("Drill Pool")]
     public List<Drill> drillPool;
@@ -33,6 +34,13 @@ public class DrillController : MonoBehaviour
     [SerializeField] private float baseDrillImprovement; // Новая переменная
     private bool isOverheated = false;
     private Color originalDrillColor;
+    private float currentRockSpeed=0;
+
+    [Header("Shake Settings")]
+    [SerializeField] private float shakeAmount = 0.1f; // Амплитуда дрожания
+    [SerializeField] private float shakeSpeed = 10f; // Скорость дрожания
+
+    private Vector3 originalDrillPosition;
 
     private void Awake()
     {
@@ -46,15 +54,13 @@ public class DrillController : MonoBehaviour
         }
     }
 
-
-
-
     private void Start()
     {
         SelectDrill(0);
-        drillSpeed = originalDrillSpeed;
+        SumSpeed(0);
         originalDrillColor = drillSpriteRenderer.color;
         baseDrillImprovement = currentDrillImprovement; // Сохраняем базовое значение
+        originalDrillPosition = drillSpriteRenderer.transform.localPosition; // Сохраняем начальную позицию
     }
 
     private void FixedUpdate()
@@ -63,14 +69,14 @@ public class DrillController : MonoBehaviour
         {
             MovePlatformDown();
             CoolingSystem.instance?.DrainCooling(0.1f); // или другой метод, который ты используешь
+            ShakeDrill(); // Добавляем дрожание
         }
     }
-
 
     public void MovePlatformDown()
     {
         Vector3 newPosition = platform.transform.position;
-        newPosition.y -= drillSpeed * currentDrillImprovement;
+        newPosition.y -=  drillSpeed;
         platform.transform.position = newPosition;
 
         CheckAndRemoveTilesUnderPlatform();
@@ -122,7 +128,8 @@ public class DrillController : MonoBehaviour
         if (other.CompareTag("SoftRock"))
         {
             Debug.Log("Бур замедлен из-за земли");
-            drillSpeed *= 0.5f;
+            currentRockSpeed = 0.5f;
+            SumSpeed(currentRockSpeed);
             CameraShake.instance?.ShakeCamera(0.07f, true);
         }
 
@@ -130,14 +137,15 @@ public class DrillController : MonoBehaviour
         {
             currentTime = 7f;
             Debug.Log("Бур погряз в очень жёсткой породе");
-            drillSpeed *= 0.01f;
+            currentRockSpeed = 0.001f;
+            SumSpeed(currentRockSpeed);
             CameraShake.instance?.ShakeCamera(0.01f, true);
             GameManager.instance.MiningStage();
             DroneController.instance.isActive = true;
             StartCoroutine(HardDrill());
         }
     }
-    
+
     private void OnTriggerStay2D(Collider2D other)
     {
         if (other.CompareTag("SoftRock") && GameManager.instance.isDrillingActive)
@@ -161,24 +169,36 @@ public class DrillController : MonoBehaviour
         }
 
         DroneHUD.instance.TimeUpdate(-1f);
-        drillSpeed = originalDrillSpeed;
         CameraShake.instance?.ShakeCamera(0f, false);
         GameManager.instance.DrillingStage();
         DroneController.instance.isActive = false;
+        currentRockSpeed = 0.1f;
+        SumSpeed(currentRockSpeed);
     }
 
     private void OnTriggerExit2D(Collider2D other)
     {
         if (other.CompareTag("SoftRock"))
         {
-            drillSpeed = originalDrillSpeed;
+            SumSpeed(0);
             CameraShake.instance?.ShakeCamera(0.01f, true);
         }
         if (other.CompareTag("Hard"))
         {
-            drillSpeed = originalDrillSpeed;
+            SumSpeed(0);
             CameraShake.instance?.ShakeCamera(0.01f, true);
         }
+    }
+
+    private void SumSpeed(float rock)
+    {
+        if (rock == 0)
+        {
+            drillSpeed = fallSpeed;
+            return;
+        }
+        drillSpeed =originalDrillSpeed * currentDrillImprovement * rock;
+        
     }
 
     public void SelectDrill(int drillIndex)
@@ -191,8 +211,10 @@ public class DrillController : MonoBehaviour
         currentDrillImprovement = isOverheated ? 
             baseDrillImprovement * overheatDrillMultiplier : 
             baseDrillImprovement;
-        
-        
+
+        // Пересчитываем скорость бурения
+        SumSpeed(currentRockSpeed);
+
         if (drillSpriteRenderer != null)
         {
             drillSpriteRenderer.sprite = selectedDrill.drillSprite;
@@ -252,5 +274,12 @@ public class DrillController : MonoBehaviour
         }
         
         Debug.Log("Охлаждение восстановлено. Мощность нормальная");
+    }
+
+    // Метод для дрожания бура
+    private void ShakeDrill()
+    {
+        float shakeOffset = Mathf.Sin(Time.time * shakeSpeed) * shakeAmount; // Используем синус для создания колебаний
+        drillSpriteRenderer.transform.localPosition = originalDrillPosition + new Vector3(0f, shakeOffset, 0f); // Смещаем бур по оси Y
     }
 }
