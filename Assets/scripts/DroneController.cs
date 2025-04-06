@@ -151,4 +151,12 @@ public class DroneController : MonoBehaviour
             moveSpeed * Time.deltaTime
         );
     }
+    
+    private void OnTriggerStay2D(Collider2D other)
+    {
+        if (other.CompareTag("CoolingStation"))
+        {
+            CoolingSystem.instance.RefillCooling(2f); // 2 единицы за кадр
+        }
+    }
 }

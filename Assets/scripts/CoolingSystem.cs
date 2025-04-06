@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 public class CoolingSystem : MonoBehaviour
@@ -6,8 +5,9 @@ public class CoolingSystem : MonoBehaviour
     public static CoolingSystem instance;
     
     [SerializeField] private GameObject coolingSystem;
-    private float coolingVolumeStart=100f;
-    public float coolingVolume;
+    [SerializeField] private float coolingVolumeStart = 100f;
+    [SerializeField] private float refillSpeed = 20f;
+    public float coolingVolume { get; private set; }
 
     private void Awake()
     {
@@ -16,15 +16,22 @@ public class CoolingSystem : MonoBehaviour
 
     void Start()
     {
-        coolingSystem.gameObject.GetComponent<PlatformBar>().SetMaxBar(coolingVolumeStart);
-        coolingVolume= coolingVolumeStart;
-        
+        coolingSystem.GetComponent<PlatformBar>().SetMaxBar(coolingVolumeStart);
+        coolingVolume = coolingVolumeStart;
     }
 
-    public void UpdateCoolingVolume(float volume)
+    // Измененный метод для расхода
+    public void DrainCooling(float amount)
     {
-        coolingVolume -= volume;
-        coolingSystem.gameObject.GetComponent<PlatformBar>().SetBar(coolingVolume);
+        coolingVolume = Mathf.Clamp(coolingVolume - amount, 0, coolingVolumeStart);
+        coolingSystem.GetComponent<PlatformBar>().SetBar(coolingVolume);
+        DrillController.Instance.CheckOverheat(coolingVolume);
     }
-    
+
+    // Метод для пополнения
+    public void RefillCooling(float amount)
+    {
+        coolingVolume = Mathf.Clamp(coolingVolume + amount, 0, coolingVolumeStart);
+        coolingSystem.GetComponent<PlatformBar>().SetBar(coolingVolume);
+    }
 }

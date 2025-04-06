@@ -12,7 +12,7 @@ public class GameManager : MonoBehaviour
 
     private float smoothSpeed = 0.125f;
     private GameObject trackingObj;
-    private bool isDrillingActive = false;
+    public bool isDrillingActive { get; private set; }
 
     private void Awake()
     {
@@ -30,12 +30,11 @@ public class GameManager : MonoBehaviour
     {
         while (true)
         {
-            if (isDrillingActive)
-            {
+            //if (isDrillingActive)
+            //{
                 DrillController.Instance.MovePlatformDown();
-                CoolingSystem.instance.UpdateCoolingVolume(0.01f);
-            }
-
+                CoolingSystem.instance.DrainCooling(0.1f); // Используем новый метод
+            //}
             yield return new WaitForSeconds(0.023f);
         }
     }

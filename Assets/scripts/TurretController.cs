@@ -18,13 +18,17 @@ public class TurretController : MonoBehaviour
 
     void Update()
     {
-        RotateTowardsMouse();
-
-        // Проверяем зажатие ЛКМ и таймер между выстрелами
-        if (Input.GetMouseButton(0) && Time.time >= nextFireTime)
+        // Проверяем активную стадию перед обработкой ввода
+        if (GameManager.instance == null || GameManager.instance.isDrillingActive)
         {
-            Shoot();
-            nextFireTime = Time.time + fireRate;
+            RotateTowardsMouse();
+            
+            // Проверяем зажатие ЛКМ и таймер между выстрелами
+            if (Input.GetMouseButton(0) && Time.time >= nextFireTime)
+            {
+                Shoot();
+                nextFireTime = Time.time + fireRate;
+            }
         }
     }
 
