@@ -15,7 +15,7 @@ public class DrillController : MonoBehaviour
 
     [Header("Drill Settings")]
     [SerializeField] private float originalDrillSpeed = 0.02f;
-    private float drillSpeed;
+    public float drillSpeed;
     private bool isDrilling = false;
     private bool isCounting = false;
     private float currentTime;
@@ -132,6 +132,13 @@ public class DrillController : MonoBehaviour
             SumSpeed(currentRockSpeed);
             CameraShake.instance?.ShakeCamera(0.07f, true);
         }
+        if (other.CompareTag("Rock"))
+        {
+            Debug.Log("Бур замедлен из-за Камня");
+            currentRockSpeed = 0.1f;
+            SumSpeed(currentRockSpeed);
+            CameraShake.instance?.ShakeCamera(0.07f, true);
+        }
 
         if (other.CompareTag("Hard"))
         {
@@ -148,7 +155,11 @@ public class DrillController : MonoBehaviour
 
     private void OnTriggerStay2D(Collider2D other)
     {
-        if (other.CompareTag("SoftRock") && GameManager.instance.isDrillingActive)
+        if ((other.CompareTag("SoftRock")) && GameManager.instance.isDrillingActive)
+        {
+            CameraShake.instance?.ShakeCamera(0.07f, true);
+        }
+        if ((other.CompareTag("Rock")) && GameManager.instance.isDrillingActive)
         {
             CameraShake.instance?.ShakeCamera(0.07f, true);
         }
@@ -179,6 +190,11 @@ public class DrillController : MonoBehaviour
     private void OnTriggerExit2D(Collider2D other)
     {
         if (other.CompareTag("SoftRock"))
+        {
+            SumSpeed(0);
+            CameraShake.instance?.ShakeCamera(0.01f, true);
+        }
+        if (other.CompareTag("Rock"))
         {
             SumSpeed(0);
             CameraShake.instance?.ShakeCamera(0.01f, true);

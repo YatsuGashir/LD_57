@@ -12,6 +12,7 @@ TagManager:
   - Wall
   - Platform
   - Bullet
+  - Rock
   layers:
   - Default
   - TransparentFX
