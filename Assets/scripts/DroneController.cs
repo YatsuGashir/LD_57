@@ -1,31 +1,30 @@
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using System.Collections;
 
 public class DroneController : MonoBehaviour
 {
     public static DroneController instance;
     
-    [Header("Movement Settings")]
+    [Header("Настройки движения")]
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private SpriteRenderer spriteRenderer;
     [SerializeField] private GameObject box;
-    
-    [Header("Mining Settings")]
-    [SerializeField] private float miningRange = 1.5f;
-    [SerializeField] private float miningTime = 0.5f;
-    [SerializeField] private float shakeIntensity = 0.1f;
     [SerializeField] private Tilemap oreTilemap;
-    [SerializeField] private TileBase oreTile;
+    [SerializeField] private float checkRadius = 0.5f;
     
-    [Header("Input Settings")]
+    [Header("Настройки анимации разрушения")]
+    [SerializeField] private float shakeDuration = 0.3f;
+    [SerializeField] private float fadeDuration = 0.5f;
+    [SerializeField] private float shakeIntensity = 0.1f;
+    [SerializeField] private GameObject destroyEffect;
+    
+    [Header("Настройки ввода")]
     [SerializeField] private float modeSwitchCooldown = 0.5f;
-    
+
     private Vector3 targetPosition;
     public bool isActive = false;
     private float lastSwitchTime = -1f;
-    private Vector3Int currentMiningCell;
-    private float miningTimer;
-    private Vector3 originalTilePosition;
 
     private void Awake()
     {
@@ -36,12 +35,7 @@ public class DroneController : MonoBehaviour
     {
         HandleModeSwitch();
         HandleMovement();
-        
-        if(isActive)
-        {
-            FindOreTile();
-            MineOre();
-        }
+        CheckAndDestroyOre();
     }
 
     private void HandleModeSwitch()
@@ -50,77 +44,111 @@ public class DroneController : MonoBehaviour
         {
             lastSwitchTime = Time.time;
             isActive = !isActive;
-            
-            if(isActive) GameManager.instance.MiningStage();
-            else GameManager.instance.DrillingStage();
+        
+            // Заменяем SwitchStage(isActive) на прямые вызовы
+            if (isActive)
+            {
+                GameManager.instance.MiningStage();
+            }
+            else
+            {
+                GameManager.instance.DrillingStage();
+            }
         }
     }
 
     private void HandleMovement()
     {
-        targetPosition = isActive ? 
+        Vector3 cursorPosition = isActive ? 
             Camera.main.ScreenToWorldPoint(Input.mousePosition) : 
             box.transform.position;
         
-        targetPosition.z = 0;
-        transform.position = Vector3.MoveTowards(transform.position, targetPosition, moveSpeed * Time.deltaTime);
+        cursorPosition.z = 0f;
+        targetPosition = cursorPosition;
+        MoveTowardsTarget();
     }
 
-    private void FindOreTile()
+    private void CheckAndDestroyOre()
     {
-        Vector3Int cellPosition = oreTilemap.WorldToCell(transform.position);
+        Vector3Int currentCell = oreTilemap.WorldToCell(transform.position);
         
-        // Проверяем 3x3 область вокруг дрона
-        for(int x = -1; x <= 1; x++)
+        for (int x = -1; x <= 1; x++)
         {
-            for(int y = -1; y <= 1; y++)
+            for (int y = -1; y <= 1; y++)
             {
-                Vector3Int checkCell = cellPosition + new Vector3Int(x, y, 0);
-                
-                if(oreTilemap.GetTile(checkCell) == oreTile && 
-                   Vector3.Distance(transform.position, oreTilemap.GetCellCenterWorld(checkCell)) <= miningRange)
+                Vector3Int checkPosition = new Vector3Int(
+                    currentCell.x + x,
+                    currentCell.y + y,
+                    currentCell.z
+                );
+
+                TileBase tile = oreTilemap.GetTile(checkPosition);
+                if (tile != null)
                 {
-                    currentMiningCell = checkCell;
-                    originalTilePosition = oreTilemap.GetCellCenterWorld(checkCell);
+                    StartCoroutine(PlayDestroyAnimation(
+                        oreTilemap.CellToWorld(checkPosition),
+                        (tile as Tile).sprite
+                    ));
+                    
+                    oreTilemap.SetTile(checkPosition, null);
                     return;
                 }
             }
         }
-        
-        // Если ничего не нашли
-        currentMiningCell = new Vector3Int(-1000, -1000, 0);
     }
 
-    private void MineOre()
+    private IEnumerator PlayDestroyAnimation(Vector3 position, Sprite oreSprite)
     {
-        if(currentMiningCell.x == -1000) return;
+        // Создаем временный объект для анимации
+        GameObject tempOre = new GameObject("TempOre");
+        tempOre.transform.position = position;
+        SpriteRenderer renderer = tempOre.AddComponent<SpriteRenderer>();
+        renderer.sprite = oreSprite;
+        renderer.sortingOrder = 1;
+
+        // Эффект дрожания
+        float shakeTimer = 0f;
+        Vector3 startPosition = tempOre.transform.position;
         
-        miningTimer += Time.deltaTime;
-        
-        // Эффект тряски
-        Vector3 shakeOffset = new Vector3(
-            Random.Range(-shakeIntensity, shakeIntensity),
-            Random.Range(-shakeIntensity, shakeIntensity),
-            0);
-        
-        oreTilemap.transform.position = originalTilePosition + shakeOffset;
-        
-        if(miningTimer >= miningTime)
+        while (shakeTimer < shakeDuration)
         {
-            oreTilemap.SetTile(currentMiningCell, null);
-            miningTimer = 0f;
-            oreTilemap.transform.position = originalTilePosition;
-            
-            // Здесь можно добавить:
-            // 1. Эффект разрушения
-            // 2. Добавление ресурсов
-            // 3. Звук добычи
+            shakeTimer += Time.deltaTime;
+            tempOre.transform.position = startPosition + Random.insideUnitSphere * shakeIntensity;
+            yield return null;
         }
+        tempOre.transform.position = startPosition;
+
+        // Эффект исчезновения
+        float fadeTimer = 0f;
+        Color startColor = renderer.color;
+        
+        while (fadeTimer < fadeDuration)
+        {
+            fadeTimer += Time.deltaTime;
+            renderer.color = new Color(
+                startColor.r,
+                startColor.g,
+                startColor.b,
+                Mathf.Lerp(1f, 0f, fadeTimer / fadeDuration)
+            );
+            yield return null;
+        }
+
+        // Визуальные эффекты
+        if (destroyEffect != null)
+        {
+            Instantiate(destroyEffect, position, Quaternion.identity);
+        }
+
+        Destroy(tempOre);
     }
 
-    private void OnDrawGizmosSelected()
+    private void MoveTowardsTarget()
     {
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, miningRange);
+        transform.position = Vector3.MoveTowards(
+            transform.position, 
+            targetPosition, 
+            moveSpeed * Time.deltaTime
+        );
     }
 }

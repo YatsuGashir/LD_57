@@ -25,6 +25,6 @@ public class DroneHUD : MonoBehaviour
     public void TimeUpdate(float time)
     {
         timeText.text = "Time: " + time;
-        if(time >= 0) timeText.text = " ";
+        if(time <= 0) timeText.text = " ";
     }
 }

@@ -57,7 +57,7 @@ public class TurretController : MonoBehaviour
 
         if (rb != null)
         {
-            rb.velocity = firePoint.up * bulletSpeed;
+            rb.linearVelocity = firePoint.up * bulletSpeed;
         }
     }
 }
