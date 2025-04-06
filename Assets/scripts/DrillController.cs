@@ -57,15 +57,15 @@ public class DrillController : MonoBehaviour
         baseDrillImprovement = currentDrillImprovement; // Сохраняем базовое значение
     }
 
-    public IEnumerator DrillDown()
+    private void FixedUpdate()
     {
-        while (true)
+        if (GameManager.instance != null)
         {
             MovePlatformDown();
-            //CoolingSystem.instance.UpdateCoolingVolume(0.1f);
-            yield return new WaitForSeconds(0.023f);
+            CoolingSystem.instance?.DrainCooling(0.1f); // или другой метод, который ты используешь
         }
     }
+
 
     public void MovePlatformDown()
     {
