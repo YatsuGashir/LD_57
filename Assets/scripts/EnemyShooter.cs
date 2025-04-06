@@ -59,8 +59,12 @@ public class EnemyShooter : MonoBehaviour
 
         // Поворот спрайта по направлению движения
         transform.localScale = new Vector3(currentDirection, 1, 1);
-
-        HandleShooting();
+    
+        if (distance <= maxDistance)
+        {
+            HandleShooting();
+        }
+        
     }
 
     void HandleShooting()

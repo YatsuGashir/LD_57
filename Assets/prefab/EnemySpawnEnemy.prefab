@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &4070783218289836875
+--- !u!1 &204101498209639615
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,41 +8,41 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 2552207955671667466}
-  - component: {fileID: 1361213141960893814}
-  - component: {fileID: 4942350303906943336}
-  - component: {fileID: 919638434759300905}
-  - component: {fileID: -5882261384184163592}
-  - component: {fileID: -1162522416608558449}
+  - component: {fileID: 6017047187333865829}
+  - component: {fileID: 3448218147900650882}
+  - component: {fileID: 17375783682848005}
+  - component: {fileID: 2160648634021600292}
+  - component: {fileID: 5063020873274935160}
+  - component: {fileID: 4405570403757554188}
   m_Layer: 0
-  m_Name: SelfKiller
+  m_Name: EnemySpawnEnemy
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &2552207955671667466
+--- !u!4 &6017047187333865829
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4070783218289836875}
+  m_GameObject: {fileID: 204101498209639615}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.05, y: 15.65, z: 0.17537503}
+  m_LocalPosition: {x: -2.52, y: 17.19, z: -0.0766577}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!212 &1361213141960893814
+--- !u!212 &3448218147900650882
 SpriteRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4070783218289836875}
+  m_GameObject: {fileID: 204101498209639615}
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
@@ -80,70 +80,24 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: -5993958233653960340, guid: 7af4e209de881094bbe2d2c4aa5ba861, type: 3}
+  m_Sprite: {fileID: 2560530363916478494, guid: 207455011b9d38649b1119354756d16f, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 7.36, y: 9.2}
+  m_Size: {x: 0.7, y: 0.89}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!50 &4942350303906943336
-Rigidbody2D:
-  serializedVersion: 5
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4070783218289836875}
-  m_BodyType: 1
-  m_Simulated: 1
-  m_UseFullKinematicContacts: 0
-  m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDamping: 0
-  m_AngularDamping: 0.05
-  m_GravityScale: 1
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_Interpolate: 0
-  m_SleepingMode: 1
-  m_CollisionDetection: 0
-  m_Constraints: 0
---- !u!114 &919638434759300905
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4070783218289836875}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ee4168c583e2072438fec8a47041841a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  speed: 5
-  damage: 4
-  explosionEffect: {fileID: 0}
-  spiralStartRadius: 4
-  spiralRotationSpeed: 5
-  spiralTighteningSpeed: 0.1
-  spiralForwardOffset: 2
---- !u!61 &-5882261384184163592
+--- !u!61 &17375783682848005
 BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4070783218289836875}
+  m_GameObject: {fileID: 204101498209639615}
   m_Enabled: 1
   serializedVersion: 3
   m_Density: 1
@@ -175,21 +129,48 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.7, y: 0.89}
-    newSize: {x: 7.36, y: 9.2}
+    oldSize: {x: 1.42, y: 1.65}
+    newSize: {x: 0.7, y: 0.89}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1.84, y: 2.3}
+  m_Size: {x: 1.42, y: 1.65}
   m_EdgeRadius: 0
---- !u!114 &-1162522416608558449
+--- !u!50 &2160648634021600292
+Rigidbody2D:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 204101498209639615}
+  m_BodyType: 1
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_GravityScale: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
+--- !u!114 &5063020873274935160
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4070783218289836875}
+  m_GameObject: {fileID: 204101498209639615}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2052137ae2dd8924e88d9646e53874d5, type: 3}
@@ -198,3 +179,25 @@ MonoBehaviour:
   maxHP: 50
   currentHP: 0
   enemyTag: Enemy
+--- !u!114 &4405570403757554188
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 204101498209639615}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf075a1024da83046bcd967bb5cac984, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyPrefab: {fileID: 4070783218289836875, guid: c1dd04166e883ba4283e4402768c6503, type: 3}
+  spawnInterval: 5
+  spawnCheckRadius: 1
+  spawnOffset: {x: 0, y: -1, z: 0}
+  movementSpeed: 3
+  sideMovementSpeed: 2
+  maxDistance: 6
+  directionChangeInterval: 2
+  showGizmos: 1
+  gizmoColor: {r: 1, g: 0, b: 0, a: 1}

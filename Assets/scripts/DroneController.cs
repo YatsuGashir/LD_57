@@ -28,9 +28,19 @@ public class DroneController : MonoBehaviour
 
     public int oreCount = 0; // Счётчик руды
 
+    [Header("Дрожание бура")]
+    [SerializeField] private Transform drillLeftTransform; // Ссылка на дочерний объект бура
+    [SerializeField] private Transform drillRightTransform;
+    [SerializeField] private float drillShakeIntensity = 0.1f;
+    private Coroutine shakeCoroutine;
+    private Vector3 originalDrillLeftPosition;
+    private Vector3 originalDrillRightPosition;
+
     private void Awake()
     {
         instance = this;
+        originalDrillLeftPosition = drillLeftTransform.localPosition;
+        originalDrillRightPosition = drillRightTransform.localPosition;
     }
 
     private void Update()
@@ -94,37 +104,73 @@ public class DroneController : MonoBehaviour
                         (tile as Tile).sprite
                     ));
 
+                    // Запускаем дрожание бура
+                    if (shakeCoroutine != null)
+                        StopCoroutine(shakeCoroutine);
+                    shakeCoroutine = StartCoroutine(ShakeDrill());
+
                     oreTilemap.SetTile(checkPosition, null);
-
-                    // Увеличиваем счётчик руды и передаем её в UpgradeManager
                     oreCount++;
-                    UpgradeManager.instance.AddOre(1);  // 1 руда добавляется за разрушение
-
+                    UpgradeManager.instance.AddOre(1);
                     return;
                 }
             }
         }
     }
+    
+    private IEnumerator ShakeDrill()
+    {
+        if (drillLeftTransform == null && drillRightTransform == null) yield break;
+
+        float elapsed = 0f;
+        
+        while (elapsed < shakeDuration)
+        {
+            // Случайное смещение по X
+            float xShake = Random.Range(-drillShakeIntensity, drillShakeIntensity);
+            drillLeftTransform.localPosition = originalDrillLeftPosition + 
+                                           new Vector3(xShake, 0, 0);
+            drillRightTransform.localPosition = originalDrillRightPosition + 
+                                               new Vector3(xShake, 0, 0);
+
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        // Возвращаем в исходную позицию
+        drillLeftTransform.localPosition = originalDrillLeftPosition;
+        drillRightTransform.localPosition = originalDrillRightPosition;
+    }
+
 
     private IEnumerator PlayDestroyAnimation(Vector3 position, Sprite oreSprite)
     {
+        // Получаем точный центр ячейки
+        Vector3 cellCenter = oreTilemap.GetCellCenterWorld(oreTilemap.WorldToCell(position));
+    
         // Создаем временный объект для анимации
         GameObject tempOre = new GameObject("TempOre");
-        tempOre.transform.position = position;
+        tempOre.transform.position = cellCenter; // Используем точный центр
         SpriteRenderer renderer = tempOre.AddComponent<SpriteRenderer>();
         renderer.sprite = oreSprite;
         renderer.sortingOrder = 1;
 
-        // Эффект дрожания
+        // Эффект дрожания только по вертикали
         float shakeTimer = 0f;
         Vector3 startPosition = tempOre.transform.position;
 
         while (shakeTimer < shakeDuration)
         {
             shakeTimer += Time.deltaTime;
-            tempOre.transform.position = startPosition + Random.insideUnitSphere * shakeIntensity;
+        
+            // Только Y-составляющая для дрожания
+            float yShake = Random.Range(-shakeIntensity, shakeIntensity);
+            tempOre.transform.position = startPosition + new Vector3(0, yShake, 0);
+        
             yield return null;
         }
+
+        // Возвращаем в исходную позицию
         tempOre.transform.position = startPosition;
 
         // Эффект исчезновения
@@ -146,7 +192,7 @@ public class DroneController : MonoBehaviour
         // Визуальные эффекты
         if (destroyEffect != null)
         {
-            Instantiate(destroyEffect, position, Quaternion.identity);
+            Instantiate(destroyEffect, startPosition, Quaternion.identity); // Используем исходную позицию
         }
 
         Destroy(tempOre);

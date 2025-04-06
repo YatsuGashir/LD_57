@@ -18,7 +18,7 @@ public class GameManager : MonoBehaviour
     private Vector3 drillingCamOffset = new Vector3(0f, 9f, -10f);
 
     private float miningZoom = 4f;
-    private float drillingZoom = 6f;
+    private float drillingZoom = 5f;
     private float zoomSmoothSpeed = 5f;
     private float targetZoom;
 

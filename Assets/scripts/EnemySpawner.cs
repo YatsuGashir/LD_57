@@ -15,12 +15,13 @@ public class EnemySpawner : MonoBehaviour
     // Управление спавном врагов через триггеры
     private void OnTriggerEnter2D(Collider2D other)
     {
-        Debug.Log("trigger enter");
+        
         if (other.CompareTag("Player"))
         {
+            Debug.Log("trigger enter");
             foreach (var trigger in spawnTriggers)
             {
-                if (!trigger.isTriggered && trigger.triggerCollider.bounds.Contains(other.transform.position))
+                if (!trigger.isTriggered /*&& trigger.triggerCollider.bounds.Contains(other.transform.position)*/)
                 {
                     StartCoroutine(SpawnEnemies(trigger));
                     trigger.isTriggered = true; // Отмечаем триггер как активированный
@@ -57,11 +58,12 @@ public class EnemySpawner : MonoBehaviour
         float spawnX = Random.Range(spawnAreaMin.x, spawnAreaMax.x);
 
         // Спавним врага немного выше платформы, добавляя смещение по оси Y
-        float spawnY = platformPosition.y + Random.Range(2f, 5f); // Смещение вверх от платформы
+        float spawnY = platformPosition.y + Random.Range(20f, 30f); // Смещение вверх от платформы
 
         // Создаем врага на вычисленной позиции
         Vector2 spawnPosition = new Vector2(spawnX, spawnY);
         Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
+        Debug.Log(spawnX + " " + spawnY);
     }
 }
 

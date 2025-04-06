@@ -84,7 +84,7 @@ SpriteRenderer:
   m_Size: {x: 7.36, y: 7.36}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &4798580820084457249
@@ -97,9 +97,10 @@ GameObject:
   m_Component:
   - component: {fileID: 1367546278258327072}
   - component: {fileID: 5533422559664644047}
-  - component: {fileID: 7695842562053377230}
   - component: {fileID: -3064771506533425639}
+  - component: {fileID: 7695842562053377230}
   - component: {fileID: 4406496189256335021}
+  - component: {fileID: 485853812443226352}
   m_Layer: 0
   m_Name: EnemyShooter
   m_TagString: Enemy
@@ -178,26 +179,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &7695842562053377230
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4798580820084457249}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bf93cff8c0e78ef4bb0e2190daf1a9f7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  enemyBulletPrefab: {fileID: 663359622045569695, guid: d4d567d3006c5bc44b57092515d01497, type: 3}
-  firePoint: {fileID: 1468283878687828566}
-  fireRate: 1
-  bulletSpeed: 5
-  movementSpeed: 3
-  sideMovementSpeed: 2
-  maxDistance: 5
-  directionChangeInterval: 2
 --- !u!50 &-3064771506533425639
 Rigidbody2D:
   serializedVersion: 5
@@ -225,6 +206,26 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &7695842562053377230
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4798580820084457249}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf93cff8c0e78ef4bb0e2190daf1a9f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyBulletPrefab: {fileID: 663359622045569695, guid: d4d567d3006c5bc44b57092515d01497, type: 3}
+  firePoint: {fileID: 1468283878687828566}
+  fireRate: 1
+  bulletSpeed: 5
+  movementSpeed: 3
+  sideMovementSpeed: 2
+  maxDistance: 5
+  directionChangeInterval: 2
 --- !u!61 &4406496189256335021
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -259,7 +260,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: -0.0067500174, y: 0.055275917}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -269,5 +270,20 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.0001, y: 0.0001}
+  m_Size: {x: 0.60992855, y: 1.0775433}
   m_EdgeRadius: 0
+--- !u!114 &485853812443226352
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4798580820084457249}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2052137ae2dd8924e88d9646e53874d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHP: 50
+  currentHP: 0
+  enemyTag: Enemy
