@@ -69,7 +69,7 @@ public class AudioManager : MonoBehaviour
 
         Sound s = soundDict[soundName];
         AudioSource src = audioPool.Dequeue();
-
+        src.outputAudioMixerGroup = s.outputGroup;
         src.clip = s.clip;
         src.volume = s.volume;
         src.loop = s.loop;

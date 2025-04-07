@@ -41,7 +41,7 @@ public class DrillController : MonoBehaviour
     [SerializeField] private float shakeSpeed = 10f; // Скорость дрожания
 
     private Vector3 originalDrillPosition;
-
+    public bool isDrill = false;
     private void Awake()
     {
         if (Instance == null)
@@ -67,7 +67,7 @@ public class DrillController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (GameManager.instance != null)
+        if (GameManager.instance != null && isDrill)
         {
             MovePlatformDown();
             CoolingSystem.instance?.DrainCooling(0.1f); // или другой метод, который ты используешь
@@ -298,6 +298,6 @@ public class DrillController : MonoBehaviour
     private void ShakeDrill()
     {
         float shakeOffset = Mathf.Sin(Time.time * shakeSpeed) * shakeAmount; // Используем синус для создания колебаний
-        drillSpriteRenderer.transform.localPosition = originalDrillPosition + new Vector3(0f, shakeOffset, 0f); // Смещаем бур по оси Y
+        drillSpriteRenderer.transform.localPosition = originalDrillPosition + new Vector3(0f, shakeOffset-0.2f, 0f); // Смещаем бур по оси Y
     }
 }

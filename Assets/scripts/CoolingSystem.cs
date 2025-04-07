@@ -19,7 +19,7 @@ public class CoolingSystem : MonoBehaviour
     private int currentUpgradeIndex = 0; // Индекс текущего улучшения
     private float refillSpeed;  // Текущая скорость пополнения
     private float drainSpeed;   // Текущая скорость расхода
-
+    private bool firstReload = false;
     private void Awake()
     {
         instance = this;
@@ -28,7 +28,8 @@ public class CoolingSystem : MonoBehaviour
     void Start()
     {
         coolingSystemUI.GetComponent<PlatformBar>().SetMaxBar(coolingVolumeStart); // Устанавливаем максимальное значение охлаждения
-        coolingVolume = coolingVolumeStart;
+        coolingVolume = 0;
+        coolingSystemUI.GetComponent<PlatformBar>().SetBar(coolingVolume);  // Обновляем UI охлаждения
         ApplyUpgrade(currentUpgradeIndex); // Применяем первое улучшение
     }
 
@@ -63,6 +64,14 @@ public class CoolingSystem : MonoBehaviour
     {
         coolingVolume = Mathf.Clamp(coolingVolume + (amount * refillSpeed), 0, coolingVolumeStart);
         coolingSystemUI.GetComponent<PlatformBar>().SetBar(coolingVolume);  // Обновляем UI охлаждения
+        if (!firstReload)
+        {
+            if (coolingVolume == coolingVolumeStart)
+            {
+                TutorialManager.instance.firstCoolR();
+                firstReload = true;
+            }
+        }
     }
 
     // Метод для смены улучшения
