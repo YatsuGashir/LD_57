@@ -54,7 +54,7 @@ public class UpgradeManager : MonoBehaviour
         oreCountText.text = "Ore: " + oreCount;
 
         // Бур
-        if (currentDrill >= 3)
+        if (currentDrill >= 2)
         {
             upgradeCostText.text = "<color=red>Level Max</color>";
             upgradeButton.interactable = false;
@@ -66,7 +66,7 @@ public class UpgradeManager : MonoBehaviour
         }
 
         // Охладитель
-        if (currentCoolingUpgradeIndex >= 3)
+        if (currentCoolingUpgradeIndex >= 2)
         {
             coolingUpgradeCostText.text = "<color=red>Level Max</color>";
             coolingUpgradeButton.interactable = false;
@@ -80,7 +80,7 @@ public class UpgradeManager : MonoBehaviour
         }
 
         // Турель
-        if (currentTurretUpgradeIndex >= 3)
+        if (currentTurretUpgradeIndex >= 2)
         {
             turretUpgradeCostText.text = "<color=red>Level Max</color>";
             turretUpgradeButton.interactable = false;
@@ -94,7 +94,7 @@ public class UpgradeManager : MonoBehaviour
         }
 
         // Платформа
-        if (currentPlatformUpgradeIndex >= 3)
+        if (currentPlatformUpgradeIndex >= 2)
         {
             platformUpgradeCostText.text = "<color=red>Level Max</color>";
             platformUpgradeButton.interactable = false;
@@ -115,7 +115,7 @@ public class UpgradeManager : MonoBehaviour
 
     public void UpgradeDrill()
     {
-        if (currentDrill >= 3) return;
+        if (currentDrill >= 2) return;
         if (oreCount >= upgradeCost)
         {
             currentDrill++;
@@ -128,7 +128,7 @@ public class UpgradeManager : MonoBehaviour
 
     public void UpgradeCoolingSystem()
     {
-        if (currentCoolingUpgradeIndex >= 3) return;
+        if (currentCoolingUpgradeIndex == 2) return;
         if (oreCount >= coolingUpgradeCost &&
             currentCoolingUpgradeIndex + 1 < CoolingSystem.instance.upgrades.Length)
         {
@@ -142,7 +142,7 @@ public class UpgradeManager : MonoBehaviour
 
     public void UpgradeTurret()
     {
-        if (currentTurretUpgradeIndex >= 3) return;
+        if (currentTurretUpgradeIndex >= 2) return;
         if (oreCount >= turretUpgradeCost &&
             currentTurretUpgradeIndex + 1 < TurretController.instance.upgrades.Length)
         {
@@ -156,7 +156,7 @@ public class UpgradeManager : MonoBehaviour
     
     public void UpgradePlatform()
     {
-        if (currentPlatformUpgradeIndex >= 3) return;
+        if (currentPlatformUpgradeIndex >= 2) return;
         
         if (oreCount >= platformUpgradeCost &&
             currentPlatformUpgradeIndex + 1 < platformHealth.GetUpgradeCount())
