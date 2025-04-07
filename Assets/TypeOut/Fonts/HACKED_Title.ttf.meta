@@ -1,0 +1,27 @@
+fileFormatVersion: 2
+guid: 0d321ad12fe3d4391b506737af0972d1
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontNames: []
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20144
+  packageName: TypeOut Animated Text
+  packageVersion: 1.1
+  assetPath: Assets/TypeOut/Fonts/HACKED_Title.ttf
+  uploadId: 44657

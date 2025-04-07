@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 90ac72f6beaff485188f70d169248b73
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 20144
+  packageName: TypeOut Animated Text
+  packageVersion: 1.1
+  assetPath: Assets/TypeOut/Scripts/TypeOutEditor.cs
+  uploadId: 44657
