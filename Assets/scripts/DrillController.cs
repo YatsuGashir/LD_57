@@ -24,10 +24,10 @@ public class DrillController : MonoBehaviour
 
     [Header("Drill Pool")]
     public List<Drill> drillPool;
-    public float currentDrillImprovement = 1f; // оставляем для совместимости (можно использовать для вычислений бонусов, если потребуется)
+    public float currentDrillImprovement = 1f; // коэффициент улучшения от уровня бура
 
     [Header("Overheat Settings")]
-    [SerializeField] private float overheatDrillMultiplier = 0.1f; // коэффициент перегрева (не используется напрямую, но можно для расчёта)
+    [SerializeField] private float overheatDrillMultiplier = 0.1f; // коэффициент перегрева (можно использовать для расчёта)
     [SerializeField] private Color overheatColor = Color.red;
     [SerializeField] private ParticleSystem overheatParticles;
     [SerializeField] private AudioClip overheatSound;
@@ -42,16 +42,15 @@ public class DrillController : MonoBehaviour
     private Vector3 originalDrillPosition;
     public bool isDrill = false;
 
-    // Новые поля для расчёта скорости:
+    // Параметры для расчёта сопротивления породы:
     [Header("Speed Modifiers")]
     [SerializeField] private float softRockResistance = 0.02f; // сопротивление мягкой породы
     [SerializeField] private float rockResistanceValue = 0.05f; // сопротивление обычного камня
+    [SerializeField] private float sulfurResistanceValue = 0.1f; // сопротивление от серы
     [SerializeField] private float hardRockResistance = 0.09f; // сопротивление для hard (будет давать почти нулевую скорость)
-    [SerializeField] private float turretSpeedBonus = 0.05f; // бонус скорости от турели (применяется только если есть руда)
     [SerializeField] private float overheatPenaltyValue = 0.03f; // штраф скорости при перегреве
 
     private float currentRockResistance = 0f; // текущее сопротивление породы
-    private bool hasOre = false; // флаг наличия руды (если руда добывается, бонус турели применяется)
     private bool isRocking = false; // для отслеживания состояния hard
 
     private void Awake()
@@ -69,7 +68,7 @@ public class DrillController : MonoBehaviour
     private void Start()
     {
         SelectDrill(0);
-        // Изначально считаем скорость без сопротивления
+        // Изначально рассчитываем скорость без сопротивления
         SumSpeed(0f);
         originalDrillColor = drillSpriteRenderer.color;
         baseDrillImprovement = currentDrillImprovement; // сохраняем базовое значение
@@ -155,6 +154,13 @@ public class DrillController : MonoBehaviour
             SumSpeed(currentRockResistance);
             CameraShake.instance?.ShakeCamera(0.07f, true);
         }
+        if (other.CompareTag("Sulfur"))
+        {
+            Debug.Log("Бур замедлен из-за серы");
+            currentRockResistance = sulfurResistanceValue;
+            SumSpeed(currentRockResistance);
+            CameraShake.instance?.ShakeCamera(0.07f, true);
+        }
         if (other.CompareTag("Hard"))
         {
             TriggerEnemiesEscape();
@@ -175,12 +181,16 @@ public class DrillController : MonoBehaviour
         }
     }
 
-    // Во время нахождения в области породы можем обновлять камеру
+    // При нахождении в области породы обновляем камеру
     private void OnTriggerStay2D(Collider2D other)
     {
         if ((other.CompareTag("SoftRock") || other.CompareTag("Rock")) && GameManager.instance.isDrillingActive)
         {
             CameraShake.instance?.ShakeCamera(0.07f, true);
+        }
+        if (other.CompareTag("Sulfur") && GameManager.instance.isDrillingActive)
+        {
+            CameraShake.instance?.ShakeCamera(0.01f, true);
         }
         if (other.CompareTag("Hard") && GameManager.instance.isDrillingActive)
         {
@@ -191,9 +201,8 @@ public class DrillController : MonoBehaviour
     // После выхода из зоны сопротивления сбрасываем сопротивление на 0
     private void OnTriggerExit2D(Collider2D other)
     {
-        if (other.CompareTag("SoftRock") || other.CompareTag("Rock") || other.CompareTag("Hard"))
+        if (other.CompareTag("SoftRock") || other.CompareTag("Rock") || other.CompareTag("Hard") || other.CompareTag("Sulfur"))
         {
-            // Для hard оставляем флаг, если нужно повторное применение эффекта
             if (other.CompareTag("Hard"))
                 isRocking = true;
             currentRockResistance = 0f;
@@ -202,16 +211,13 @@ public class DrillController : MonoBehaviour
         }
     }
 
-    // Новый метод для пересчёта скорости по заданной формуле
+    // Новый метод для пересчёта скорости по формуле с бонусом бура
     private void SumSpeed(float rockResistance)
     {
-        // Если руда добывается, бонус от турели применяется, иначе нет.
-        float turretBonus = hasOre ? turretSpeedBonus : 0f;
-        // Штраф за перегрев, если бур перегрет
+        // Формула: базовая скорость падения умноженная на коэффициент улучшения бура,
+        // затем вычитаем сопротивление породы и штраф перегрева (если активен)
         float overheatPenalty = isOverheated ? overheatPenaltyValue : 0f;
-
-        drillSpeed = fallSpeed - rockResistance + turretBonus - overheatPenalty;
-        // Не допускаем отрицательной скорости
+        drillSpeed = (fallSpeed * currentDrillImprovement) - rockResistance - overheatPenalty;
         if (drillSpeed < 0f) drillSpeed = 0f;
     }
 
@@ -223,7 +229,6 @@ public class DrillController : MonoBehaviour
         currentDrillIndex = drillIndex;
         Drill selectedDrill = drillPool[drillIndex];
         baseDrillImprovement = selectedDrill.improvementFactor; // обновляем базовое значение
-        // Если бур перегрет, коэффициент снижается (это можно использовать для других вычислений)
         currentDrillImprovement = isOverheated ? baseDrillImprovement * overheatDrillMultiplier : baseDrillImprovement;
 
         // Пересчитываем скорость с текущим сопротивлением
@@ -235,13 +240,6 @@ public class DrillController : MonoBehaviour
         }
 
         Debug.Log($"Выбрана дрель: {selectedDrill.drillName}, Коэффициент улучшения: {currentDrillImprovement}");
-    }
-
-    // Метод для установки состояния наличия руды; бонус турели применяется только если руда добывается.
-    public void SetOreStatus(bool orePresent)
-    {
-        hasOre = orePresent;
-        SumSpeed(currentRockResistance);
     }
 
     public void CheckOverheat(float currentCooling)
@@ -259,7 +257,6 @@ public class DrillController : MonoBehaviour
     private void StartOverheat()
     {
         isOverheated = true;
-        // При перегреве можно дополнительно изменять коэффициенты, если нужно (например, уменьшать улучшение)
         if (drillSpriteRenderer != null)
         {
             drillSpriteRenderer.color = overheatColor;
@@ -276,7 +273,6 @@ public class DrillController : MonoBehaviour
         }
         
         Debug.Log("Перегрев! Мощность снижена");
-        // Пересчитываем скорость с учетом перегрева
         SumSpeed(currentRockResistance);
     }
 
@@ -325,7 +321,7 @@ public class DrillController : MonoBehaviour
         }
     }
 
-    // Специальная логика для hard-породы (снижает скорость почти до нуля в течение 7 секунд)
+    // Логика для hard-породы: скорость почти сводится к нулю на 7 секунд.
     private IEnumerator HardDrill()
     {
         while (currentTime > 0)
@@ -337,7 +333,6 @@ public class DrillController : MonoBehaviour
 
         DroneHUD.instance.TimeUpdate(-1f);
         CameraShake.instance?.ShakeCamera(0f, false);
-        // По окончании hard-процесса сбрасываем сопротивление
         currentRockResistance = 0f;
         SumSpeed(currentRockResistance);
     }
