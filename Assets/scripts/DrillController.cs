@@ -179,7 +179,7 @@ public class DrillController : MonoBehaviour
         if (other.CompareTag("Hard"))
         {
             TriggerEnemiesEscape();
-            currentTime = 7f;
+            currentTime = 15f;
             Debug.Log("Бур погряз в очень жёсткой породе");
             // Применяем максимальное сопротивление для hard
             currentRockResistance = hardRockResistance;

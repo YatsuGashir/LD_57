@@ -48,7 +48,7 @@ public class EnemyHealth : MonoBehaviour
     private IEnumerator DieParticle()
     {
             deathParticle.Play();
-            yield return new WaitForSeconds(1f); // Исправлено: добавлено 'new'
+            yield return new WaitForSeconds(0.1f); // Исправлено: добавлено 'new'
         
         Destroy(gameObject); // Перенесено в корутину после проигрывания эффекта
     }

@@ -287,7 +287,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2052137ae2dd8924e88d9646e53874d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHP: 5
+  maxHP: 3
   currentHP: 0
   enemyTag: Enemy
   deathParticle: {fileID: 1867292510190656199}
