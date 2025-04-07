@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class EnemyShooter : MonoBehaviour
@@ -13,6 +14,11 @@ public class EnemyShooter : MonoBehaviour
     public float sideMovementSpeed = 2f;     // скорость бокового движения
     public float maxDistance = 6f;           // если дальше — сближаемся
     public float directionChangeInterval = 2f;
+    
+    [Header("Побег")]
+    [SerializeField] private float escapeSpeed = 10f;
+    [SerializeField] private float escapeDuration = 2f;
+    private bool isEscaping = false;
 
     private Transform platform;
     private Rigidbody2D rb;
@@ -30,6 +36,7 @@ public class EnemyShooter : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (isEscaping) return;
         if (platform == null) return;
 
         Vector2 toPlatform = platform.position - transform.position;
@@ -67,8 +74,35 @@ public class EnemyShooter : MonoBehaviour
         
     }
 
+    public void EscapeAndDespawn()
+    {
+        if (!isEscaping)
+        {
+            StartCoroutine(EscapeRoutine());
+        }
+    }
+
+    private IEnumerator EscapeRoutine()
+    {
+        isEscaping = true;
+        GetComponent<Collider2D>().enabled = false; // Отключаем коллайдер
+        Destroy(GetComponent<Rigidbody2D>()); // Удаляем физику
+
+        float timer = 0f;
+        Vector3 startPos = transform.position;
+
+        while (timer < escapeDuration)
+        {
+            timer += Time.deltaTime;
+            transform.position += Vector3.up * escapeSpeed * Time.deltaTime;
+            yield return null;
+        }
+
+        Destroy(gameObject);
+    }
     void HandleShooting()
     {
+        if (isEscaping) return;
         if (Time.time >= nextFireTime)
         {
             Shoot();

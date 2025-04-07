@@ -12,8 +12,8 @@ GameObject:
   - component: {fileID: 1361213141960893814}
   - component: {fileID: 4942350303906943336}
   - component: {fileID: 919638434759300905}
-  - component: {fileID: -5882261384184163592}
   - component: {fileID: -1162522416608558449}
+  - component: {fileID: 5928264144025691819}
   m_Layer: 0
   m_Name: SelfKiller
   m_TagString: Enemy
@@ -136,9 +136,24 @@ MonoBehaviour:
   spiralStartRadius: 4
   spiralRotationSpeed: 5
   spiralTighteningSpeed: 0.1
-  spiralForwardOffset: 2
---- !u!61 &-5882261384184163592
-BoxCollider2D:
+  spiralForwardOffset: 5
+--- !u!114 &-1162522416608558449
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4070783218289836875}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2052137ae2dd8924e88d9646e53874d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHP: 50
+  currentHP: 0
+  enemyTag: Enemy
+--- !u!70 &5928264144025691819
+CapsuleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -172,29 +187,5 @@ BoxCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.7, y: 0.89}
-    newSize: {x: 7.36, y: 9.2}
-    adaptiveTilingThreshold: 0.5
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  m_Size: {x: 1.84, y: 2.3}
-  m_EdgeRadius: 0
---- !u!114 &-1162522416608558449
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4070783218289836875}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2052137ae2dd8924e88d9646e53874d5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxHP: 50
-  currentHP: 0
-  enemyTag: Enemy
+  m_Size: {x: 0.7, y: 0.89}
+  m_Direction: 0

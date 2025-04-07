@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class EnemyRammer : MonoBehaviour
@@ -11,6 +12,11 @@ public class EnemyRammer : MonoBehaviour
     public float spiralRotationSpeed = 5f;     // Скорость вращения по кругу
     public float spiralTighteningSpeed = 1f;   // Насколько быстро спираль "сужается"
     public float spiralForwardOffset = 2f;  // Насколько вперёд по направлению крутится враг
+    
+    [Header("Побег")]
+    [SerializeField] private float escapeSpeed = 10f;
+    [SerializeField] private float escapeDuration = 2f;
+    private bool isEscaping = false;
 
     private Transform platform;
     private bool hasCollided;
@@ -26,12 +32,40 @@ public class EnemyRammer : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (isEscaping) return;
         if (!hasCollided && platform != null)
         {
             MoveInSpiral();
         }
     }
 
+    public void EscapeAndDespawn()
+    {
+        if (!isEscaping)
+        {
+            StartCoroutine(EscapeRoutine());
+        }
+    }
+
+    private IEnumerator EscapeRoutine()
+    {
+        isEscaping = true;
+        GetComponent<Collider2D>().enabled = false; // Отключаем коллайдер
+        Destroy(GetComponent<Rigidbody2D>()); // Удаляем физику
+
+        float timer = 0f;
+        Vector3 startPos = transform.position;
+
+        while (timer < escapeDuration)
+        {
+            timer += Time.deltaTime;
+            transform.position += Vector3.up * escapeSpeed * Time.deltaTime;
+            yield return null;
+        }
+
+        Destroy(gameObject);
+    }
+    
     void MoveInSpiral()
     {
         // Центр окружности: точка вдоль пути к платформе

@@ -13,6 +13,7 @@ public class UpgradeManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI upgradeCostText;
     [SerializeField] private Button upgradeButton;
     private int upgradeCost = 2;
+    
 
     [Header("Улучшение охлаждения")]
     [SerializeField] private TextMeshProUGUI coolingUpgradeCostText;
@@ -53,6 +54,7 @@ public class UpgradeManager : MonoBehaviour
         // Бур
         upgradeCostText.text = "Стоимость улучшения: " + upgradeCost;
         upgradeButton.interactable = oreCount >= upgradeCost;
+            
 
         // Охладитель
         coolingUpgradeCostText.text = "Улучшение охлаждения: " + coolingUpgradeCost;
@@ -83,6 +85,7 @@ public class UpgradeManager : MonoBehaviour
     {
         if (oreCount >= upgradeCost)
         {
+            AudioManager.instance.Play("upgrade");
             oreCount -= upgradeCost;
             DrillController.Instance.SelectDrill(1);
         }
@@ -93,6 +96,7 @@ public class UpgradeManager : MonoBehaviour
         if (oreCount >= coolingUpgradeCost &&
             currentCoolingUpgradeIndex + 1 < CoolingSystem.instance.upgrades.Length)
         {
+            AudioManager.instance.Play("upgrade");
             oreCount -= coolingUpgradeCost;
             currentCoolingUpgradeIndex++;
             CoolingSystem.instance.UpgradeCoolingSystem(currentCoolingUpgradeIndex);
@@ -105,6 +109,7 @@ public class UpgradeManager : MonoBehaviour
         if (oreCount >= turretUpgradeCost &&
             currentTurretUpgradeIndex + 1 < TurretController.instance.upgrades.Length)
         {
+            AudioManager.instance.Play("upgrade");
             oreCount -= turretUpgradeCost;
             currentTurretUpgradeIndex++;
             TurretController.instance.UpgradeTurret(currentTurretUpgradeIndex);
@@ -114,9 +119,11 @@ public class UpgradeManager : MonoBehaviour
     
     public void UpgradePlatform()
     {
+        
         if (oreCount >= platformUpgradeCost &&
             currentPlatformUpgradeIndex + 1 < platformHealth.GetUpgradeCount())
         {
+            AudioManager.instance.Play("upgrade");
             oreCount -= platformUpgradeCost;
             currentPlatformUpgradeIndex++;
             platformHealth.ApplyUpgrade(currentPlatformUpgradeIndex);

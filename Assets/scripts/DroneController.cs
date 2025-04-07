@@ -7,14 +7,14 @@ public class DroneController : MonoBehaviour
     public static DroneController instance;
 
     [Header("Настройки движения")]
-    [SerializeField] private float moveSpeed = 5f;
+    [SerializeField] private float moveSpeed = 7f;
     [SerializeField] private SpriteRenderer spriteRenderer;
     [SerializeField] private GameObject box;
     [SerializeField] private Tilemap oreTilemap;
     [SerializeField] private float checkRadius = 0.5f;
 
     [Header("Настройки анимации разрушения")]
-    [SerializeField] private float shakeDuration = 0.3f;
+    [SerializeField] private float shakeDuration = 0.7f;
     [SerializeField] private float fadeDuration = 0.5f;
     [SerializeField] private float shakeIntensity = 0.1f;
     [SerializeField] private GameObject destroyEffect;
@@ -29,7 +29,9 @@ public class DroneController : MonoBehaviour
     private Vector3 targetPosition;
     public bool isActive = false;
     private float lastSwitchTime = -1f;
-
+    
+    private bool firsOre = false;
+    private bool firstSit = false;
     public int oreCount = 0; // Счётчик руды
 
     [Header("Дрожание бура")]
@@ -46,7 +48,15 @@ public class DroneController : MonoBehaviour
         originalDrillLeftPosition = drillLeftTransform.localPosition;
         originalDrillRightPosition = drillRightTransform.localPosition;
     }
-
+    private void Start()
+    {
+        // Синхронизируем состояние с GameManager
+        isActive = GameManager.instance.isDrillingActive;
+    
+        // Если нужно переопределить:
+        isActive = true; // Дрон начинает активным
+        GameManager.instance.MiningStage(); // Принудительно включаем режим майнинга
+    }
     private void Update()
     {
         HandleModeSwitch();
@@ -73,6 +83,11 @@ public class DroneController : MonoBehaviour
                 }
 
                 isActive = false;
+                if (!firstSit)
+                {
+                    TutorialManager.instance.firstSit();
+                    firstSit = true;
+                }
                 GameManager.instance.DrillingStage();
             }
             else // Сейчас активна платформа → переходим в майнинг
@@ -206,7 +221,11 @@ public class DroneController : MonoBehaviour
         {
             Instantiate(destroyEffect, startPosition, Quaternion.identity); // Используем исходную позицию
         }
-
+        if (!firsOre)
+        {
+            TutorialManager.instance.firstOreEx();
+            firsOre = true;
+        }
         Destroy(tempOre);
     }
 
