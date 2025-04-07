@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class PlatformHealth : MonoBehaviour
 {
+    public static System.Action OnPlatformDestroyed; // Событие уничтожения платформы
+
     public int maxHP = 100;
     public int currentHP;
     [SerializeField] private PlatformBar platformBar;
@@ -33,6 +35,9 @@ public class PlatformHealth : MonoBehaviour
 
     void Die()
     {
+        // Вызываем событие перед уничтожением
+        OnPlatformDestroyed?.Invoke();
+        
         Destroy(gameObject);
     }
 

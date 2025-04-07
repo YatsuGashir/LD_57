@@ -12,6 +12,7 @@ public class DrillController : MonoBehaviour
     [SerializeField] private Tilemap[] tilemaps; 
     [SerializeField] private SpriteRenderer drillSpriteRenderer;
     [SerializeField] private BoxCollider2D platformCollider;
+    [SerializeField] private ParticleSystem drillParticles;
 
     [Header("Drill Settings")]
     [SerializeField] private float originalDrillSpeed = 0.02f; // не используется в новой формуле
@@ -73,17 +74,31 @@ public class DrillController : MonoBehaviour
         originalDrillColor = drillSpriteRenderer.color;
         baseDrillImprovement = currentDrillImprovement; // сохраняем базовое значение
         originalDrillPosition = drillSpriteRenderer.transform.localPosition; // сохраняем начальную позицию
+        
         AudioManager.instance.Play("bigDrill", transform.position);
         AudioManager.instance.Play("ost");
     }
 
     private void FixedUpdate()
     {
+        // Если бур активен (бурит) – партиклы должны играть, иначе остановить
         if (GameManager.instance != null && isDrill)
         {
             MovePlatformDown();
             CoolingSystem.instance?.DrainCooling(0.1f);
             ShakeDrill();
+
+            if (!drillParticles.isPlaying)
+            {
+                drillParticles.Play();
+            }
+        }
+        else
+        {
+            if (drillParticles.isPlaying)
+            {
+                drillParticles.Stop();
+            }
         }
     }
 
@@ -208,6 +223,8 @@ public class DrillController : MonoBehaviour
             currentRockResistance = 0f;
             SumSpeed(currentRockResistance);
             CameraShake.instance?.ShakeCamera(0.01f, true);
+            // Если покинута зона, останавливаем партиклы (их также контролирует FixedUpdate)
+            // drillParticles.Stop(); // Можно убрать, т.к. теперь управление в FixedUpdate
         }
     }
 

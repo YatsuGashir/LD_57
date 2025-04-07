@@ -19,6 +19,7 @@ public class EnemyShooter : MonoBehaviour
     [SerializeField] private float escapeSpeed = 10f;
     [SerializeField] private float escapeDuration = 2f;
     private bool isEscaping = false;
+    
 
     private Transform platform;
     private Rigidbody2D rb;

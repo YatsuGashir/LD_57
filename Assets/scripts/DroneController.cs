@@ -5,7 +5,8 @@ using UnityEngine.Tilemaps;
 public class DroneController : MonoBehaviour
 {
     public static DroneController instance;
-
+    [SerializeField] private ParticleSystem miningParticle;
+    
     [Header("Настройки движения")]
     [SerializeField] private float moveSpeed = 7f;
     [SerializeField] private SpriteRenderer spriteRenderer;
@@ -42,14 +43,21 @@ public class DroneController : MonoBehaviour
     private Vector3 originalDrillLeftPosition;
     private Vector3 originalDrillRightPosition;
 
+    [Header("Настройки наклона дрона")]
+    [SerializeField] private float tiltMultiplier = 5f;   // Насколько сильно будет влиять разница по X на угол наклона
+    [SerializeField] private float maxTiltAngle = 15f;      // Максимальный угол наклона (в градусах)
+    [SerializeField] private float rotationSpeed = 5f;      // Скорость плавного наклона
+
     private void Awake()
     {
         instance = this;
         originalDrillLeftPosition = drillLeftTransform.localPosition;
         originalDrillRightPosition = drillRightTransform.localPosition;
     }
+    
     private void Start()
     {
+        miningParticle.Stop();
         // Синхронизируем состояние с GameManager
         isActive = GameManager.instance.isDrillingActive;
     
@@ -57,23 +65,26 @@ public class DroneController : MonoBehaviour
         isActive = true; // Дрон начинает активным
         GameManager.instance.MiningStage(); // Принудительно включаем режим майнинга
     }
+    
     private void Update()
     {
         HandleModeSwitch();
         HandleMovement();
         CheckAndDestroyOre();
     }
+    
     private void FixedUpdate()
     {
         MoveTowardsTarget();
     }
+    
     private void HandleModeSwitch()
     {
         if (Input.GetMouseButton(1) && Time.time - lastSwitchTime >= modeSwitchCooldown)
         {
             lastSwitchTime = Time.time;
 
-            if (isActive) // Сейчас активен дрон → хотим вернуться в бурение
+            if (isActive) // Сейчас активен дрон → хотим вернуться в режим бурения
             {
                 float distanceToPlatform = Vector3.Distance(transform.position, platform.transform.position);
                 if (distanceToPlatform > switchRadius)
@@ -97,18 +108,31 @@ public class DroneController : MonoBehaviour
             }
         }
     }
-
-
+    
+    // Изменённый метод HandleMovement: теперь дрон вычисляет целевую позицию и наклоняет свою верхнюю часть в сторону курсора
     private void HandleMovement()
     {
-        Vector3 cursorPosition = isActive ? 
-            Camera.main.ScreenToWorldPoint(Input.mousePosition) : 
-            box.transform.position;
-
+        Vector3 cursorPosition;
+        if (isActive)
+        {
+            cursorPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        }
+        else
+        {
+            cursorPosition = box.transform.position + Vector3.down * 1f;
+        }
         cursorPosition.z = 0f;
         targetPosition = cursorPosition;
-    }
 
+        // Вычисляем горизонтальную разницу между позицией курсора и дрона
+        float horizontalDiff = targetPosition.x - transform.position.x;
+        // Инвертируем значение, чтобы верх дрона наклонялся в сторону курсора
+        float targetTilt = Mathf.Clamp(-horizontalDiff * tiltMultiplier, -maxTiltAngle, maxTiltAngle);
+        Quaternion targetRotation = Quaternion.Euler(0, 0, targetTilt);
+        // Плавно приближаем текущий угол к целевому
+        transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * rotationSpeed);
+    }
+    
     private void CheckAndDestroyOre()
     {
         Vector3Int currentCell = oreTilemap.WorldToCell(transform.position);
@@ -126,6 +150,7 @@ public class DroneController : MonoBehaviour
                 TileBase tile = oreTilemap.GetTile(checkPosition);
                 if (tile != null)
                 {
+                    miningParticle.Play();
                     StartCoroutine(PlayDestroyAnimation(
                         oreTilemap.CellToWorld(checkPosition),
                         (tile as Tile).sprite
@@ -153,54 +178,41 @@ public class DroneController : MonoBehaviour
         
         while (elapsed < shakeDuration)
         {
-            // Случайное смещение по X
             float xShake = Random.Range(-drillShakeIntensity, drillShakeIntensity);
-            drillLeftTransform.localPosition = originalDrillLeftPosition + 
-                                           new Vector3(xShake, 0, 0);
-            drillRightTransform.localPosition = originalDrillRightPosition + 
-                                               new Vector3(xShake, 0, 0);
+            drillLeftTransform.localPosition = originalDrillLeftPosition + new Vector3(xShake, 0, 0);
+            drillRightTransform.localPosition = originalDrillRightPosition + new Vector3(xShake, 0, 0);
 
             elapsed += Time.deltaTime;
             yield return null;
         }
 
-        // Возвращаем в исходную позицию
         drillLeftTransform.localPosition = originalDrillLeftPosition;
         drillRightTransform.localPosition = originalDrillRightPosition;
     }
-
-
+    
     private IEnumerator PlayDestroyAnimation(Vector3 position, Sprite oreSprite)
     {
-        // Получаем точный центр ячейки
         Vector3 cellCenter = oreTilemap.GetCellCenterWorld(oreTilemap.WorldToCell(position));
     
-        // Создаем временный объект для анимации
         GameObject tempOre = new GameObject("TempOre");
-        tempOre.transform.position = cellCenter; // Используем точный центр
+        tempOre.transform.position = cellCenter;
         SpriteRenderer renderer = tempOre.AddComponent<SpriteRenderer>();
         renderer.sprite = oreSprite;
         renderer.sortingOrder = 1;
 
-        // Эффект дрожания только по вертикали
         float shakeTimer = 0f;
         Vector3 startPosition = tempOre.transform.position;
 
         while (shakeTimer < shakeDuration)
         {
             shakeTimer += Time.deltaTime;
-        
-            // Только Y-составляющая для дрожания
             float yShake = Random.Range(-shakeIntensity, shakeIntensity);
             tempOre.transform.position = startPosition + new Vector3(0, yShake, 0);
-        
             yield return null;
         }
 
-        // Возвращаем в исходную позицию
         tempOre.transform.position = startPosition;
 
-        // Эффект исчезновения
         float fadeTimer = 0f;
         Color startColor = renderer.color;
 
@@ -216,19 +228,19 @@ public class DroneController : MonoBehaviour
             yield return null;
         }
 
-        // Визуальные эффекты
         if (destroyEffect != null)
         {
-            Instantiate(destroyEffect, startPosition, Quaternion.identity); // Используем исходную позицию
+            Instantiate(destroyEffect, startPosition, Quaternion.identity);
         }
         if (!firsOre)
         {
             TutorialManager.instance.firstOreEx();
             firsOre = true;
         }
+        miningParticle.Stop();
         Destroy(tempOre);
     }
-
+    
     private void MoveTowardsTarget()
     {
         transform.position = Vector3.MoveTowards(
@@ -237,12 +249,12 @@ public class DroneController : MonoBehaviour
             moveSpeed * Time.deltaTime
         );
     }
-
+    
     private void OnTriggerStay2D(Collider2D other)
     {
         if (other.CompareTag("CoolingStation"))
         {
-            CoolingSystem.instance.RefillCooling(2f); // 2 единицы за кадр
+            CoolingSystem.instance.RefillCooling(2f);
         }
     }
     
@@ -254,5 +266,4 @@ public class DroneController : MonoBehaviour
             Gizmos.DrawWireSphere(platform.transform.position, switchRadius);
         }
     }
-    
 }
