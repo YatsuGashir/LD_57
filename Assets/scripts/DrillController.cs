@@ -131,14 +131,14 @@ public class DrillController : MonoBehaviour
         if (other.CompareTag("SoftRock"))
         {
             Debug.Log("Бур замедлен из-за земли");
-            currentRockSpeed = 0.5f;
+            currentRockSpeed = 0.7f;
             SumSpeed(currentRockSpeed);
             CameraShake.instance?.ShakeCamera(0.07f, true);
         }
         if (other.CompareTag("Rock"))
         {
             Debug.Log("Бур замедлен из-за Камня");
-            currentRockSpeed = 0.1f;
+            currentRockSpeed = 0.5f;
             SumSpeed(currentRockSpeed);
             CameraShake.instance?.ShakeCamera(0.07f, true);
         }
