@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class EnemySpawnEnemy : MonoBehaviour
@@ -18,6 +19,11 @@ public class EnemySpawnEnemy : MonoBehaviour
     public bool showGizmos = true;
     public Color gizmoColor = Color.red;
 
+    [Header("Побег")]
+    [SerializeField] private float escapeSpeed = 10f;
+    [SerializeField] private float escapeDuration = 2f;
+    private bool isEscaping = false;
+    
     private Transform platform;
     private Rigidbody2D rb;
     private float nextSpawnTime;
@@ -36,10 +42,38 @@ public class EnemySpawnEnemy : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (isEscaping) return;
         if (platform == null) return;
 
         HandleMovement();
         HandleSpawnerLogic();
+    }
+    
+    public void EscapeAndDespawn()
+    {
+        if (!isEscaping)
+        {
+            StartCoroutine(EscapeRoutine());
+        }
+    }
+
+    private IEnumerator EscapeRoutine()
+    {
+        isEscaping = true;
+        GetComponent<Collider2D>().enabled = false; // Отключаем коллайдер
+        Destroy(GetComponent<Rigidbody2D>()); // Удаляем физику
+
+        float timer = 0f;
+        Vector3 startPos = transform.position;
+
+        while (timer < escapeDuration)
+        {
+            timer += Time.deltaTime;
+            transform.position += Vector3.up * escapeSpeed * Time.deltaTime;
+            yield return null;
+        }
+
+        Destroy(gameObject);
     }
 
     void HandleMovement()

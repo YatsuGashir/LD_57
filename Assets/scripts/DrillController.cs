@@ -35,6 +35,7 @@ public class DrillController : MonoBehaviour
     private bool isOverheated = false;
     private Color originalDrillColor;
     private float currentRockSpeed=0;
+    private bool isRocking = false;
 
     [Header("Shake Settings")]
     [SerializeField] private float shakeAmount = 0.1f; // Амплитуда дрожания
@@ -144,6 +145,7 @@ public class DrillController : MonoBehaviour
 
         if (other.CompareTag("Hard"))
         {
+            TriggerEnemiesEscape();
             currentTime = 7f;
             Debug.Log("Бур погряз в очень жёсткой породе");
             currentRockSpeed = 0.001f;
@@ -151,6 +153,11 @@ public class DrillController : MonoBehaviour
             CameraShake.instance?.ShakeCamera(0.01f, true);
             GameManager.instance.MiningStage();
             DroneController.instance.isActive = true;
+            if (isRocking)
+            {
+                TutorialManager.instance.HardGround();
+                isRocking = false;
+            }
             StartCoroutine(HardDrill());
         }
     }
@@ -203,6 +210,7 @@ public class DrillController : MonoBehaviour
         }
         if (other.CompareTag("Hard"))
         {
+            isRocking = true;
             SumSpeed(0);
             CameraShake.instance?.ShakeCamera(0.01f, true);
         }
@@ -299,5 +307,27 @@ public class DrillController : MonoBehaviour
     {
         float shakeOffset = Mathf.Sin(Time.time * shakeSpeed) * shakeAmount; // Используем синус для создания колебаний
         drillSpriteRenderer.transform.localPosition = originalDrillPosition + new Vector3(0f, shakeOffset-0.2f, 0f); // Смещаем бур по оси Y
+    }
+    
+    private void TriggerEnemiesEscape()
+    {
+        EnemyShooter[] enemiesSh = FindObjectsOfType<EnemyShooter>();
+        foreach (EnemyShooter enemy in enemiesSh)
+        {
+            enemy.EscapeAndDespawn();
+        }
+        EnemyRammer[] enemiesRm = FindObjectsOfType< EnemyRammer>();
+        foreach (EnemyRammer enemy in enemiesRm)
+        {
+            enemy.EscapeAndDespawn();
+        }
+        EnemySpawnEnemy[] enemiesSp = FindObjectsOfType<EnemySpawnEnemy>();
+        foreach (EnemySpawnEnemy enemy in enemiesSp)
+        {
+            enemy.EscapeAndDespawn();
+        }
+    
+        // Альтернативно, если используете пул объектов:
+        // EnemyManager.Instance.DespawnAllEnemies();
     }
 }

@@ -60,4 +60,15 @@ public class TutorialManager : MonoBehaviour
         DrillController.Instance.isDrill = true;
     }
 
+    public void HardGround()
+    {
+        DialogueLine[] lines = new DialogueLine[]
+        {
+            new DialogueLine { text = "The enemy has retreated to regroup. " +
+                                      "Gather as much ore as you can before reinforcements arrive.", portrait = portrait1 },
+        };
+
+        dialogueManager.StartDialogue(lines);
+    }
+
 }
