@@ -34,4 +34,8 @@ public class CameraShake : MonoBehaviour
         shakeMagnitude = magnitude;
         isShake = shake;
     }
+    public void ResetShake()
+    {
+        shakeOffset = Vector3.zero;
+    }
 }

@@ -30,7 +30,7 @@ public class UpgradeManager : MonoBehaviour
     [Header("Улучшение платформы")]
     [SerializeField] private TextMeshProUGUI platformUpgradeCostText;
     [SerializeField] private Button platformUpgradeButton;
-    private int platformUpgradeCost = 5;
+    private int platformUpgradeCost = 6;
     private int currentPlatformUpgradeIndex = 0;
 
     [SerializeField] private PlatformHealth platformHealth;
@@ -51,32 +51,61 @@ public class UpgradeManager : MonoBehaviour
 
     private void FixedUpdate()
     {
-        // Обновляем UI ресурсов
-        oreCountText.text = "Руда: " + oreCount;
+        oreCountText.text = "Ore: " + oreCount;
 
         // Бур
-        upgradeCostText.text = "Стоимость улучшения: " + upgradeCost;
-        upgradeButton.interactable = oreCount >= upgradeCost;
-            
+        if (currentDrill >= 3)
+        {
+            upgradeCostText.text = "<color=red>Level Max</color>";
+            upgradeButton.interactable = false;
+        }
+        else
+        {
+            upgradeCostText.text = "Upgrade drill: " + upgradeCost;
+            upgradeButton.interactable = oreCount >= upgradeCost;
+        }
 
         // Охладитель
-        coolingUpgradeCostText.text = "Улучшение охлаждения: " + coolingUpgradeCost;
-        coolingUpgradeButton.interactable =
-            oreCount >= coolingUpgradeCost &&
-            currentCoolingUpgradeIndex + 1 < CoolingSystem.instance.upgrades.Length;
+        if (currentCoolingUpgradeIndex >= 3)
+        {
+            coolingUpgradeCostText.text = "<color=red>Level Max</color>";
+            coolingUpgradeButton.interactable = false;
+        }
+        else
+        {
+            coolingUpgradeCostText.text = "Upgrade cooling system: " + coolingUpgradeCost;
+            coolingUpgradeButton.interactable =
+                oreCount >= coolingUpgradeCost &&
+                currentCoolingUpgradeIndex + 1 < CoolingSystem.instance.upgrades.Length;
+        }
 
         // Турель
-        turretUpgradeCostText.text = "Улучшение турели: " + turretUpgradeCost;
-        turretUpgradeButton.interactable =
-            oreCount >= turretUpgradeCost &&
-            currentTurretUpgradeIndex + 1 < TurretController.instance.upgrades.Length;
-        
-        // Платформа
-        platformUpgradeCostText.text = "Улучшение платформы: " + platformUpgradeCost;
-        platformUpgradeButton.interactable =
-            oreCount >= platformUpgradeCost &&
-            currentPlatformUpgradeIndex + 1 < platformHealth.GetUpgradeCount();
+        if (currentTurretUpgradeIndex >= 3)
+        {
+            turretUpgradeCostText.text = "<color=red>Level Max</color>";
+            turretUpgradeButton.interactable = false;
+        }
+        else
+        {
+            turretUpgradeCostText.text = "Upgrade turret: " + turretUpgradeCost;
+            turretUpgradeButton.interactable =
+                oreCount >= turretUpgradeCost &&
+                currentTurretUpgradeIndex + 1 < TurretController.instance.upgrades.Length;
+        }
 
+        // Платформа
+        if (currentPlatformUpgradeIndex >= 3)
+        {
+            platformUpgradeCostText.text = "<color=red>Level Max</color>";
+            platformUpgradeButton.interactable = false;
+        }
+        else
+        {
+            platformUpgradeCostText.text = "Upgrade platform: " + platformUpgradeCost;
+            platformUpgradeButton.interactable =
+                oreCount >= platformUpgradeCost &&
+                currentPlatformUpgradeIndex + 1 < platformHealth.GetUpgradeCount();
+        }
     }
 
     public void AddOre(int amount)
@@ -86,6 +115,7 @@ public class UpgradeManager : MonoBehaviour
 
     public void UpgradeDrill()
     {
+        if (currentDrill >= 3) return;
         if (oreCount >= upgradeCost)
         {
             currentDrill++;
@@ -98,6 +128,7 @@ public class UpgradeManager : MonoBehaviour
 
     public void UpgradeCoolingSystem()
     {
+        if (currentCoolingUpgradeIndex >= 3) return;
         if (oreCount >= coolingUpgradeCost &&
             currentCoolingUpgradeIndex + 1 < CoolingSystem.instance.upgrades.Length)
         {
@@ -111,6 +142,7 @@ public class UpgradeManager : MonoBehaviour
 
     public void UpgradeTurret()
     {
+        if (currentTurretUpgradeIndex >= 3) return;
         if (oreCount >= turretUpgradeCost &&
             currentTurretUpgradeIndex + 1 < TurretController.instance.upgrades.Length)
         {
@@ -124,6 +156,7 @@ public class UpgradeManager : MonoBehaviour
     
     public void UpgradePlatform()
     {
+        if (currentPlatformUpgradeIndex >= 3) return;
         
         if (oreCount >= platformUpgradeCost &&
             currentPlatformUpgradeIndex + 1 < platformHealth.GetUpgradeCount())
@@ -133,13 +166,7 @@ public class UpgradeManager : MonoBehaviour
             currentPlatformUpgradeIndex++;
             platformHealth.ApplyUpgrade(currentPlatformUpgradeIndex);
             platformUpgradeCost += 4;
-            DialogueLine[] lines = new DialogueLine[]
-            {
-                new DialogueLine { text = "Ты это чувствуешь?..", portrait = portrait1 },
-                new DialogueLine { text = "Будь осторожен. Мы не знаем, что внизу.", portrait = portrait1 }
-            };
 
-            dialogueManager.StartDialogue(lines);
         }
     }
 }

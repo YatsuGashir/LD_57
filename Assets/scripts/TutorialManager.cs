@@ -17,7 +17,10 @@ public class TutorialManager : MonoBehaviour
     {
         DialogueLine[] lines = new DialogueLine[]
         {
-            new DialogueLine { text = "Fly up to the ore and it will be mined.", portrait = portrait1 },
+            new DialogueLine { text = "Hey miner.", portrait = portrait1 },
+            new DialogueLine { text = "You've been sent to this hole to excavate some shroomium. ", portrait = portrait1 },
+            new DialogueLine { text = "This is one of the few remaining parts of this space rock that hasn't been nearly touched by those filthy mushrooms.", portrait = portrait1 },
+            new DialogueLine { text = "Bring the drills to this purple ore to extract sroomium.", portrait = portrait1 },
         };
 
         dialogueManager.StartDialogue(lines);
@@ -28,8 +31,9 @@ public class TutorialManager : MonoBehaviour
         DialogueLine[] lines = new DialogueLine[]
         {
             new DialogueLine { text = "Good.", portrait = portrait1 },
-            new DialogueLine { text = "Now move towards the platform and fly up to the coolers on the sides. " +
-                                      "Stand next to them to refuel.", portrait = portrait1 }
+            new DialogueLine { text = "Your platform needs constant cooling to work. " +
+                                      "And you can help her cool down faster.", portrait = portrait1 },
+            new DialogueLine { text = "Fly up to the coolant flasks and speed up the cooling.", portrait = portrait1 }
         };
 
         dialogueManager.StartDialogue(lines);
@@ -40,7 +44,9 @@ public class TutorialManager : MonoBehaviour
         DialogueLine[] lines = new DialogueLine[]
         {
             new DialogueLine { text = "Great.", portrait = portrait1 },
-            new DialogueLine { text = "Now, right-click while near the platform to sit at the turret.", portrait = portrait1 }
+            new DialogueLine { text = "Now you can get into the station's control module." +
+                                      " It allows you to take control under the turret to fend off some... " +
+                                      "uninveted guests. (RMB click)", portrait = portrait1 }
         };
 
         dialogueManager.StartDialogue(lines);
@@ -50,9 +56,7 @@ public class TutorialManager : MonoBehaviour
     {
         DialogueLine[] lines = new DialogueLine[]
         {
-            new DialogueLine { text = "Briefing is complete, unit. " +
-                                      "Upgrade the platform with the mined ore. " +
-                                      "Keep an eye on the coolant and drill all the way to the bottom.\"", portrait = portrait1 },
+            new DialogueLine { text = "Don't forget to keep coolers maintaining. Good luck miner.\n", portrait = portrait1 },
 
         };
 

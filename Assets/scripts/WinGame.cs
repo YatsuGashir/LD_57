@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class WinGame : MonoBehaviour
@@ -6,15 +7,19 @@ public class WinGame : MonoBehaviour
     [SerializeField] DialogueManager dialogueManager;
     [SerializeField] Sprite portrait1;
 
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        Win();
+    }
     private void Win()
     {
         DialogueLine[] lines = new DialogueLine[]
         {
-            new DialogueLine { text = "Outstanding work, Unit." +
-                                      " The company is proud of you.", portrait = portrait1 },
-            new DialogueLine { text = "You've uncovered a new vein and didn't end up just another mushroom-head. " +
-                                      "Return to base.", portrait = portrait1 }
+            new DialogueLine { text = "Good job miner. Go into the station's control module and get ready to return to orbit.", portrait = portrait1 },
         };
+        dialogueManager.StartDialogue(lines);
+        
     }
 
 }

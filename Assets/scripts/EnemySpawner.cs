@@ -3,17 +3,35 @@ using UnityEngine;
 
 public class EnemySpawner : MonoBehaviour
 {
+    public static EnemySpawner instance;
+
     public Transform platform;
-        
-    [Header("Настройки")]
-    public SpawnTrigger[] spawnTriggers;   // Массив триггеров для спавна врагов
-    public GameObject[] enemyPrefabs;      // Массив префабов врагов, которые могут быть заспавнены
-    public Vector2 spawnAreaMin;           // Минимальная точка области спавна
-    public Vector2 spawnAreaMax;           // Максимальная точка области спавна
+    public SpawnTrigger[] spawnTriggers;
+    public GameObject[] enemyPrefabs;
+    public Vector2 spawnAreaMin;
+    public Vector2 spawnAreaMax;
+
+    private void Awake()
+    {
+        instance = this;
+    }
+
+    public void ActivateTrigger(int index)
+    {
+        if (index < 0 || index >= spawnTriggers.Length) return;
+
+        var trigger = spawnTriggers[index];
+        if (trigger.isTriggered) return;
+
+        Debug.Log($"Trigger {index} activated");
+        trigger.isTriggered = true;
+        StartCoroutine(SpawnEnemies(trigger));
+    }
     
 
+
     // Управление спавном врагов через триггеры
-    private void OnTriggerEnter2D(Collider2D other)
+    /*private void OnTriggerEnter2D(Collider2D other)
     {
         
         if (other.CompareTag("Player"))
@@ -21,14 +39,14 @@ public class EnemySpawner : MonoBehaviour
             Debug.Log("trigger enter");
             foreach (var trigger in spawnTriggers)
             {
-                if (!trigger.isTriggered /*&& trigger.triggerCollider.bounds.Contains(other.transform.position)*/)
+                if (!trigger.isTriggered /*&& trigger.triggerCollider.bounds.Contains(other.transform.position))
                 {
                     StartCoroutine(SpawnEnemies(trigger));
                     trigger.isTriggered = true; // Отмечаем триггер как активированный
                 }
             }
         }
-    }
+    }*/
 
     // Короутина для спавна врагов из сценариев
     private IEnumerator SpawnEnemies(SpawnTrigger trigger)
@@ -58,7 +76,7 @@ public class EnemySpawner : MonoBehaviour
         float spawnX = Random.Range(spawnAreaMin.x, spawnAreaMax.x);
 
         // Спавним врага немного выше платформы, добавляя смещение по оси Y
-        float spawnY = platformPosition.y + Random.Range(3f, 7f); // Смещение вверх от платформы
+        float spawnY = platformPosition.y + Random.Range(10f, 20f); // Смещение вверх от платформы
 
         // Создаем врага на вычисленной позиции
         Vector2 spawnPosition = new Vector2(spawnX, spawnY);

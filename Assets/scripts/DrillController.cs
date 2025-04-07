@@ -42,6 +42,7 @@ public class DrillController : MonoBehaviour
 
     private Vector3 originalDrillPosition;
     public bool isDrill = false;
+    private bool wasInHard = false;
 
     // Параметры для расчёта сопротивления породы:
     [Header("Speed Modifiers")]
@@ -178,20 +179,22 @@ public class DrillController : MonoBehaviour
         }
         if (other.CompareTag("Hard"))
         {
+            if (!wasInHard)
+            {
+                wasInHard = true;
+                TutorialManager.instance.HardGround();
+            }
+
             TriggerEnemiesEscape();
-            currentTime = 15f;
+            currentTime = 25f;
             Debug.Log("Бур погряз в очень жёсткой породе");
-            // Применяем максимальное сопротивление для hard
+
             currentRockResistance = hardRockResistance;
             SumSpeed(currentRockResistance);
             CameraShake.instance?.ShakeCamera(0.01f, true);
             GameManager.instance.MiningStage();
             DroneController.instance.isActive = true;
-            if (isRocking)
-            {
-                TutorialManager.instance.HardGround();
-                isRocking = false;
-            }
+
             StartCoroutine(HardDrill());
         }
     }
@@ -219,13 +222,17 @@ public class DrillController : MonoBehaviour
         if (other.CompareTag("SoftRock") || other.CompareTag("Rock") || other.CompareTag("Hard") || other.CompareTag("Sulfur"))
         {
             if (other.CompareTag("Hard"))
+            {
                 isRocking = true;
+                wasInHard = false; // сбрасываем, чтобы можно было повторно вызвать при следующем входе
+            }
             currentRockResistance = 0f;
             SumSpeed(currentRockResistance);
             CameraShake.instance?.ShakeCamera(0.01f, true);
             // Если покинута зона, останавливаем партиклы (их также контролирует FixedUpdate)
             // drillParticles.Stop(); // Можно убрать, т.к. теперь управление в FixedUpdate
         }
+        
     }
 
     // Новый метод для пересчёта скорости по формуле с бонусом бура

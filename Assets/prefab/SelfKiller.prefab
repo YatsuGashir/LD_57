@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 919638434759300905}
   - component: {fileID: -1162522416608558449}
   - component: {fileID: 5928264144025691819}
+  - component: {fileID: -7466010402513275234}
   m_Layer: 0
   m_Name: SelfKiller
   m_TagString: Enemy
@@ -100,14 +101,14 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4070783218289836875}
-  m_BodyType: 1
+  m_BodyType: 0
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 0
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -135,9 +136,9 @@ MonoBehaviour:
   damage: 4
   explosionEffect: {fileID: 0}
   spiralStartRadius: 4
-  spiralRotationSpeed: 5
+  spiralRotationSpeed: 6
   spiralTighteningSpeed: 0.1
-  spiralForwardOffset: 5
+  spiralForwardOffset: 7
   escapeSpeed: 10
   escapeDuration: 2
 --- !u!114 &-1162522416608558449
@@ -192,6 +193,43 @@ CapsuleCollider2D:
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_Size: {x: 0.7, y: 0.89}
+  m_Direction: 0
+--- !u!70 &-7466010402513275234
+CapsuleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4070783218289836875}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: -0.04841736, y: 0}
+  m_Size: {x: 0.93885905, y: 1.2099962}
   m_Direction: 0
 --- !u!1001 &7342264610463309766
 PrefabInstance:

@@ -10,7 +10,8 @@ public class TurretController : MonoBehaviour
     public float maxRotationAngle = 45f;
     public float rotationSpeed = 5f;
 
-    [Header("Настройки стрельбы")]
+    [Header("Настройки стрельбы")] 
+    [SerializeField] private ParticleSystem shootParticle;
     public GameObject bulletPrefab;
     public Transform firePoint;
     public float baseBulletSpeed = 10f;
@@ -32,6 +33,7 @@ public class TurretController : MonoBehaviour
 
     void Start()
     {
+        shootParticle.Stop();
         ApplyUpgrade(currentUpgradeIndex);
     }
 
@@ -67,6 +69,7 @@ public class TurretController : MonoBehaviour
 
     void Shoot()
     {
+        shootParticle.Play();
         GameObject bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
         Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
 

@@ -38,7 +38,7 @@ public class PlatformHealth : MonoBehaviour
         // Вызываем событие перед уничтожением
         OnPlatformDestroyed?.Invoke();
         
-        Destroy(gameObject);
+        //Destroy(gameObject);
     }
 
     public void ApplyUpgrade(int index)

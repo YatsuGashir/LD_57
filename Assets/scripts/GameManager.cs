@@ -56,6 +56,7 @@ public class GameManager : MonoBehaviour
         isDrillingActive = false;
         trackingObj = player;
         CameraShake.instance.ShakeCamera(0f, false);
+        CameraShake.instance.ResetShake(); // <- добавь это
         SetCameraMode(false);
     }
 

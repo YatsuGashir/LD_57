@@ -102,6 +102,7 @@ public class EnemyRammer : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
+        Debug.Log("Triggered with: " + other.name);
         if (other.CompareTag("Platform") && !hasCollided)
         {
             hasCollided = true;
