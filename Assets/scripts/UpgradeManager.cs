@@ -25,6 +25,18 @@ public class UpgradeManager : MonoBehaviour
     [SerializeField] private Button turretUpgradeButton;
     private int turretUpgradeCost = 4;
     private int currentTurretUpgradeIndex = 0;
+    
+    [Header("Улучшение платформы")]
+    [SerializeField] private TextMeshProUGUI platformUpgradeCostText;
+    [SerializeField] private Button platformUpgradeButton;
+    private int platformUpgradeCost = 5;
+    private int currentPlatformUpgradeIndex = 0;
+
+    [SerializeField] private PlatformHealth platformHealth;
+    [Header("Система диалогов")]
+    [SerializeField] DialogueManager dialogueManager;
+    [SerializeField] Sprite portrait1;
+
 
     private int oreCount = 0;
 
@@ -33,7 +45,7 @@ public class UpgradeManager : MonoBehaviour
         instance = this;
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         // Обновляем UI ресурсов
         oreCountText.text = "Руда: " + oreCount;
@@ -53,6 +65,13 @@ public class UpgradeManager : MonoBehaviour
         turretUpgradeButton.interactable =
             oreCount >= turretUpgradeCost &&
             currentTurretUpgradeIndex + 1 < TurretController.instance.upgrades.Length;
+        
+        // Платформа
+        platformUpgradeCostText.text = "Улучшение платформы: " + platformUpgradeCost;
+        platformUpgradeButton.interactable =
+            oreCount >= platformUpgradeCost &&
+            currentPlatformUpgradeIndex + 1 < platformHealth.GetUpgradeCount();
+
     }
 
     public void AddOre(int amount)
@@ -90,6 +109,25 @@ public class UpgradeManager : MonoBehaviour
             currentTurretUpgradeIndex++;
             TurretController.instance.UpgradeTurret(currentTurretUpgradeIndex);
             turretUpgradeCost += 3;
+        }
+    }
+    
+    public void UpgradePlatform()
+    {
+        if (oreCount >= platformUpgradeCost &&
+            currentPlatformUpgradeIndex + 1 < platformHealth.GetUpgradeCount())
+        {
+            oreCount -= platformUpgradeCost;
+            currentPlatformUpgradeIndex++;
+            platformHealth.ApplyUpgrade(currentPlatformUpgradeIndex);
+            platformUpgradeCost += 4;
+            DialogueLine[] lines = new DialogueLine[]
+            {
+                new DialogueLine { text = "Ты это чувствуешь?..", portrait = portrait1 },
+                new DialogueLine { text = "Будь осторожен. Мы не знаем, что внизу.", portrait = portrait1 }
+            };
+
+            dialogueManager.StartDialogue(lines);
         }
     }
 }

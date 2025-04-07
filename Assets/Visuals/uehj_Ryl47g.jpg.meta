@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: d99bccbb38ce7754dbf8fc989927d79e
+guid: 241d36b2d8593ff4cab0a8d637d0b53f
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 2263746759245145111
-    second: Destiny-FallenShank_0
+      213: -7294490774192595559
+    second: uehj_Ryl47g_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -51,7 +51,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 900
+  spritePixelsToUnits: 100
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Destiny-FallenShank_0
+      name: uehj_Ryl47g_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 1240
-        height: 800
+        width: 1080
+        height: 1067
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 714af360fa17a6f10800000000000000
-      internalID: 2263746759245145111
+      spriteID: 99dd2eae943c4ca90800000000000000
+      internalID: -7294490774192595559
       vertices: []
       indices: 
       edges: []
@@ -147,8 +147,7 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable:
-      Destiny-FallenShank_0: 2263746759245145111
+    nameFileIdTable: {}
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

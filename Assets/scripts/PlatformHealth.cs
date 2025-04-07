@@ -4,22 +4,24 @@ public class PlatformHealth : MonoBehaviour
 {
     public int maxHP = 100;
     public int currentHP;
-    //public UnityEvent OnDamageTaken;
-    //public UnityEvent OnDestroyed;
-    [SerializeField] private PlatformBar platformBar;  // Ссылка на UI панель здоровья
+    [SerializeField] private PlatformBar platformBar;
+
+    [Header("Улучшения платформы")]
+    public PlatformUpgrade[] upgrades;
+    public SpriteRenderer[] platformSpriteRenderers;
+
+    private int currentUpgradeIndex = 0;
 
     void Start()
     {
         currentHP = maxHP;
-        platformBar.SetMaxBar(maxHP);  // Инициализация максимального значения на UI
+        platformBar.SetMaxBar(maxHP);
     }
 
     public void TakeDamage(int damage)
     {
         currentHP = Mathf.Max(0, currentHP - damage);
-        platformBar.SetBar(currentHP);  // Обновляем UI
-
-        //OnDamageTaken.Invoke();
+        platformBar.SetBar(currentHP);
 
         if (currentHP <= 0)
         {
@@ -29,8 +31,29 @@ public class PlatformHealth : MonoBehaviour
 
     void Die()
     {
-        //OnDestroyed.Invoke();
-        // Добавьте логику уничтожения/отключения платформы
         Destroy(gameObject);
     }
+
+    public void ApplyUpgrade(int index)
+    {
+        if (index < 0 || index >= upgrades.Length) return;
+
+        PlatformUpgrade upgrade = upgrades[index];
+
+        // Обновление спрайтов
+        for (int i = 0; i < platformSpriteRenderers.Length && i < upgrade.platformSprites.Length; i++)
+        {
+            if (upgrade.platformSprites[i] != null)
+                platformSpriteRenderers[i].sprite = upgrade.platformSprites[i];
+        }
+
+        maxHP += upgrade.additionalHP;
+        currentHP += upgrade.additionalHP;
+        platformBar.SetMaxBar(maxHP);
+        platformBar.SetBar(currentHP);
+
+        Debug.Log("Платформа улучшена: " + upgrade.upgradeName);
+    }
+
+    public int GetUpgradeCount() => upgrades.Length;
 }
