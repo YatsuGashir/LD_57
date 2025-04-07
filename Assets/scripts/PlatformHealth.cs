@@ -5,12 +5,14 @@ public class PlatformHealth : MonoBehaviour
     public int maxHP = 100;
     public int currentHP;
     [SerializeField] private PlatformBar platformBar;
+    [SerializeField] private Animator animator;
 
     [Header("Улучшения платформы")]
     public PlatformUpgrade[] upgrades;
     public SpriteRenderer[] platformSpriteRenderers;
 
     private int currentUpgradeIndex = 0;
+    private int count=1;
 
     void Start()
     {
@@ -47,6 +49,9 @@ public class PlatformHealth : MonoBehaviour
                 platformSpriteRenderers[i].sprite = upgrade.platformSprites[i];
         }
 
+        count++;
+        string lvl = "LVL" + count; 
+        animator.SetTrigger(lvl);
         maxHP += upgrade.additionalHP;
         currentHP += upgrade.additionalHP;
         platformBar.SetMaxBar(maxHP);
