@@ -136,7 +136,7 @@ MonoBehaviour:
   spiralStartRadius: 4
   spiralRotationSpeed: 5
   spiralTighteningSpeed: 0.1
-  spiralForwardOffset: 2
+  spiralForwardOffset: 5
 --- !u!61 &-5882261384184163592
 BoxCollider2D:
   m_ObjectHideFlags: 0

@@ -61,6 +61,8 @@ public class DrillController : MonoBehaviour
         originalDrillColor = drillSpriteRenderer.color;
         baseDrillImprovement = currentDrillImprovement; // Сохраняем базовое значение
         originalDrillPosition = drillSpriteRenderer.transform.localPosition; // Сохраняем начальную позицию
+        AudioManager.instance.Play("bigDrill", transform.position);
+        AudioManager.instance.Play("ost");
     }
 
     private void FixedUpdate()

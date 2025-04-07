@@ -24,7 +24,15 @@ public class EnemyHealth : MonoBehaviour
 
     void Die()
     {
-        // Добавить эффекты смерти (например, взрыв) или другие действия
+        int randomChoice = Random.Range(0, 2); // 0 или 1
+        if (randomChoice == 0)
+        {
+            AudioManager.instance.Play("enemydeath1");
+        }
+        else
+        {
+            AudioManager.instance.Play("enemydeath2");
+        }
         Destroy(gameObject); // Уничтожаем врага
     }
 

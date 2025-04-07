@@ -58,7 +58,7 @@ public class EnemySpawner : MonoBehaviour
         float spawnX = Random.Range(spawnAreaMin.x, spawnAreaMax.x);
 
         // Спавним врага немного выше платформы, добавляя смещение по оси Y
-        float spawnY = platformPosition.y + Random.Range(20f, 30f); // Смещение вверх от платформы
+        float spawnY = platformPosition.y + Random.Range(10f, 20f); // Смещение вверх от платформы
 
         // Создаем врага на вычисленной позиции
         Vector2 spawnPosition = new Vector2(spawnX, spawnY);
