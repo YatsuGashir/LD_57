@@ -1525,11 +1525,11 @@ MonoBehaviour:
   coolingUpgradeButton: {fileID: 48528470}
   turretUpgradeCostText: {fileID: 1424296196}
   turretUpgradeButton: {fileID: 882963344}
-  platformUpgradeCostText: {fileID: 458810451}
-  platformUpgradeButton: {fileID: 1125005478}
-  platformHealth: {fileID: 7953308909654437048}
-  dialogueManager: {fileID: 1392752005}
-  portrait1: {fileID: -7294490774192595559, guid: 241d36b2d8593ff4cab0a8d637d0b53f, type: 3}
+  platformUpgradeCostText: {fileID: 0}
+  platformUpgradeButton: {fileID: 0}
+  platformHealth: {fileID: 0}
+  dialogueManager: {fileID: 0}
+  portrait1: {fileID: 0}
 --- !u!1 &161442296
 GameObject:
   m_ObjectHideFlags: 0
@@ -26182,12 +26182,12 @@ MonoBehaviour:
   shakeIntensity: 0.1
   destroyEffect: {fileID: 0}
   modeSwitchCooldown: 0.5
-  platform: {fileID: 7810178478878436302}
-  switchRadius: 7.93
+  platform: {fileID: 0}
+  switchRadius: 2
   isActive: 0
   oreCount: 0
-  drillLeftTransform: {fileID: 8712161457346572351}
-  drillRightTransform: {fileID: 2777583818260107292}
+  drillLeftTransform: {fileID: 0}
+  drillRightTransform: {fileID: 0}
   drillShakeIntensity: 0.1
 --- !u!50 &6188827209414246416
 Rigidbody2D:
@@ -26776,41 +26776,8 @@ MonoBehaviour:
   maxHP: 100
   currentHP: 0
   platformBar: {fileID: 1244303863}
-  upgrades:
-  - upgradeName: 1
-    additionalHP: 1
-    platformSprites:
-    - {fileID: 5596035633890321779, guid: a6bc61de10192ef45a0749e73da930ac, type: 3}
-    - {fileID: -367789706088384531, guid: a6bc61de10192ef45a0749e73da930ac, type: 3}
-    - {fileID: -5251886118369159403, guid: 00eadd31fd741c244b89f30946352f2b, type: 3}
-    - {fileID: 4315245985260952637, guid: 00eadd31fd741c244b89f30946352f2b, type: 3}
-    - {fileID: -2795859300029602103, guid: 00eadd31fd741c244b89f30946352f2b, type: 3}
-    - {fileID: 3047377195583199721, guid: 00eadd31fd741c244b89f30946352f2b, type: 3}
-    - {fileID: 2768205310790096518, guid: 00eadd31fd741c244b89f30946352f2b, type: 3}
-    - {fileID: 2470515930022611573, guid: 00eadd31fd741c244b89f30946352f2b, type: 3}
-    - {fileID: 1488339635295629863, guid: 00eadd31fd741c244b89f30946352f2b, type: 3}
-  - upgradeName: 2
-    additionalHP: 2
-    platformSprites:
-    - {fileID: 2270773492072215408, guid: b1e35598541dd84489e3652fdcaade40, type: 3}
-    - {fileID: 4432679573703018813, guid: b1e35598541dd84489e3652fdcaade40, type: 3}
-    - {fileID: 3934838334237176542, guid: bb3f495ffa284a54aa563f1b19e7908d, type: 3}
-    - {fileID: -8359846773703945356, guid: bb3f495ffa284a54aa563f1b19e7908d, type: 3}
-    - {fileID: 2509927901680420616, guid: bb3f495ffa284a54aa563f1b19e7908d, type: 3}
-    - {fileID: -3484386313255009673, guid: bb3f495ffa284a54aa563f1b19e7908d, type: 3}
-    - {fileID: -7685755822328384483, guid: bb3f495ffa284a54aa563f1b19e7908d, type: 3}
-    - {fileID: 8809100754736989517, guid: bb3f495ffa284a54aa563f1b19e7908d, type: 3}
-    - {fileID: 7771366225436161776, guid: bb3f495ffa284a54aa563f1b19e7908d, type: 3}
-  platformSpriteRenderers:
-  - {fileID: 6772242364102813757}
-  - {fileID: 3618283958047803913}
-  - {fileID: 4334949401522128575}
-  - {fileID: 6477726992348382749}
-  - {fileID: 7429734281202146120}
-  - {fileID: 8131729422612893992}
-  - {fileID: 5534375248673457634}
-  - {fileID: 9140018069474764661}
-  - {fileID: 2087940789296569659}
+  upgrades: []
+  platformSpriteRenderers: []
 --- !u!61 &7953308909654437049
 BoxCollider2D:
   m_ObjectHideFlags: 0

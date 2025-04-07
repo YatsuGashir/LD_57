@@ -1,22 +1,11 @@
 fileFormatVersion: 2
-guid: ce4028b25c146144d987b53335879927
+guid: 9c3529992b295ab4b84f8a9a337896bf
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 4629961894610322797
-    second: Shroomium_0
-  - first:
-      213: 6233798782645651914
-    second: Shroomium_1
-  - first:
-      213: -3852644507358848470
-    second: Shroomium_2
-  - first:
-      213: -4780505105946149877
-    second: Shroomium_3
-  - first:
-      213: -7757322196712972342
-    second: Shroomium_4
+      213: -4261763979839482072
+    second: "\u0410\u0431\u0441\u043E\u043B\u044E\u0442\u043D\u0430\u044F \u0422\u044C\u043C\u0430
+      \u0421\u043B\u043E\u0439 3_0"
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -125,13 +114,14 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Shroomium_0
+      name: "\u0410\u0431\u0441\u043E\u043B\u044E\u0442\u043D\u0430\u044F \u0422\u044C\u043C\u0430
+        \u0421\u043B\u043E\u0439 3_0"
       rect:
         serializedVersion: 2
-        x: 9
-        y: 47
-        width: 37
-        height: 33
+        x: 0
+        y: 0
+        width: 86
+        height: 86
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -140,96 +130,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: d65c7d300dde04040800000000000000
-      internalID: 4629961894610322797
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Shroomium_1
-      rect:
-        serializedVersion: 2
-        x: 9
-        y: 15
-        width: 30
-        height: 34
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: ac94bd8f6f6e28650800000000000000
-      internalID: 6233798782645651914
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Shroomium_2
-      rect:
-        serializedVersion: 2
-        x: 43
-        y: 48
-        width: 27
-        height: 32
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: a2a14059b38a88ac0800000000000000
-      internalID: -3852644507358848470
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Shroomium_3
-      rect:
-        serializedVersion: 2
-        x: 62
-        y: 28
-        width: 20
-        height: 31
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: b0c73213feb38adb0800000000000000
-      internalID: -4780505105946149877
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Shroomium_4
-      rect:
-        serializedVersion: 2
-        x: 36
-        y: 7
-        width: 26
-        height: 25
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: acf9ba8ef84785490800000000000000
-      internalID: -7757322196712972342
+      spriteID: 827dc197d3c2bd4c0800000000000000
+      internalID: -4261763979839482072
       vertices: []
       indices: 
       edges: []
@@ -247,12 +149,7 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable:
-      Shroomium_0: 4629961894610322797
-      Shroomium_1: 6233798782645651914
-      Shroomium_2: -3852644507358848470
-      Shroomium_3: -4780505105946149877
-      Shroomium_4: -7757322196712972342
+    nameFileIdTable: {}
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
