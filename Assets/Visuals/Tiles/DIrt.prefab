@@ -62,6 +62,16 @@ Tilemap:
       m_TileObjectToInstantiateIndex: 65535
       dummyAlignment: 0
       m_AllTileFlags: 1073741825
+  - first: {x: 0, y: -2, z: 0}
+    second:
+      serializedVersion: 2
+      m_TileIndex: 8
+      m_TileSpriteIndex: 8
+      m_TileMatrixIndex: 0
+      m_TileColorIndex: 0
+      m_TileObjectToInstantiateIndex: 65535
+      dummyAlignment: 0
+      m_AllTileFlags: 1073741825
   - first: {x: -2, y: -1, z: 0}
     second:
       serializedVersion: 2
@@ -140,6 +150,8 @@ Tilemap:
     m_Data: {fileID: 11400000, guid: 9b468b57bf4f8d445acb6a959f740f38, type: 2}
   - m_RefCount: 1
     m_Data: {fileID: 11400000, guid: c3633de1c431bf7418ceb6854ef30087, type: 2}
+  - m_RefCount: 1
+    m_Data: {fileID: 11400000, guid: 612e5c7ae9a4f4e4184837580c7536f5, type: 2}
   m_TileSpriteArray:
   - m_RefCount: 1
     m_Data: {fileID: 2011382797, guid: c24eadfe037be8747b4ae0570aa07c66, type: 3}
@@ -157,8 +169,10 @@ Tilemap:
     m_Data: {fileID: 144266686, guid: c24eadfe037be8747b4ae0570aa07c66, type: 3}
   - m_RefCount: 1
     m_Data: {fileID: 362558631, guid: 9dd101ecf254a5042bf8af317bf562d5, type: 3}
+  - m_RefCount: 1
+    m_Data: {fileID: 21300000, guid: ce4028b25c146144d987b53335879927, type: 3}
   m_TileMatrixArray:
-  - m_RefCount: 8
+  - m_RefCount: 9
     m_Data:
       e00: 1
       e01: 0
@@ -177,7 +191,7 @@ Tilemap:
       e32: 0
       e33: 1
   m_TileColorArray:
-  - m_RefCount: 8
+  - m_RefCount: 9
     m_Data: {r: 1, g: 1, b: 1, a: 1}
   m_TileObjectToInstantiateArray: []
   m_AnimationFrameRate: 1
@@ -266,7 +280,7 @@ GameObject:
   - component: {fileID: 917848102428043183}
   - component: {fileID: 4327599737403513582}
   m_Layer: 0
-  m_Name: Dirt
+  m_Name: DIrt
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -300,7 +314,7 @@ Grid:
   m_CellGap: {x: 0, y: 0, z: 0}
   m_CellLayout: 0
   m_CellSwizzle: 0
---- !u!114 &4875138840992010695
+--- !u!114 &5146004605370918908
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
