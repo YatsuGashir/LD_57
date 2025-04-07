@@ -13,6 +13,7 @@ TagManager:
   - Platform
   - Bullet
   - Rock
+  - Sulfur
   layers:
   - Default
   - TransparentFX

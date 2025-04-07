@@ -176,7 +176,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2052137ae2dd8924e88d9646e53874d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHP: 50
+  maxHP: 10
   currentHP: 0
   enemyTag: Enemy
 --- !u!114 &4405570403757554188
@@ -201,3 +201,5 @@ MonoBehaviour:
   directionChangeInterval: 2
   showGizmos: 1
   gizmoColor: {r: 1, g: 0, b: 0, a: 1}
+  escapeSpeed: 10
+  escapeDuration: 2

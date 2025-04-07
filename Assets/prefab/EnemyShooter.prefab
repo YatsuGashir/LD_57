@@ -226,6 +226,8 @@ MonoBehaviour:
   sideMovementSpeed: 2
   maxDistance: 5
   directionChangeInterval: 2
+  escapeSpeed: 10
+  escapeDuration: 2
 --- !u!61 &4406496189256335021
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -284,6 +286,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2052137ae2dd8924e88d9646e53874d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHP: 50
+  maxHP: 5
   currentHP: 0
   enemyTag: Enemy

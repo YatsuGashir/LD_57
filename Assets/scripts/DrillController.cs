@@ -14,35 +14,45 @@ public class DrillController : MonoBehaviour
     [SerializeField] private BoxCollider2D platformCollider;
 
     [Header("Drill Settings")]
-    [SerializeField] private float originalDrillSpeed = 0.02f;
+    [SerializeField] private float originalDrillSpeed = 0.02f; // не используется в новой формуле
     public float drillSpeed;
+    [SerializeField] private float fallSpeed = 0.1f; // стандартная скорость падения
     private bool isDrilling = false;
     private bool isCounting = false;
     private float currentTime;
     private int currentDrillIndex = 0;
-    private float fallSpeed = 0.1f;
 
     [Header("Drill Pool")]
     public List<Drill> drillPool;
-    public float currentDrillImprovement = 1f;
+    public float currentDrillImprovement = 1f; // коэффициент улучшения от уровня бура
 
     [Header("Overheat Settings")]
-    [SerializeField] private float overheatDrillMultiplier = 0.1f;
+    [SerializeField] private float overheatDrillMultiplier = 0.1f; // коэффициент перегрева (можно использовать для расчёта)
     [SerializeField] private Color overheatColor = Color.red;
     [SerializeField] private ParticleSystem overheatParticles;
     [SerializeField] private AudioClip overheatSound;
-    [SerializeField] private float baseDrillImprovement; // Новая переменная
+    [SerializeField] private float baseDrillImprovement; // базовый коэффициент улучшения
     private bool isOverheated = false;
     private Color originalDrillColor;
-    private float currentRockSpeed=0;
-    private bool isRocking = false;
 
     [Header("Shake Settings")]
-    [SerializeField] private float shakeAmount = 0.1f; // Амплитуда дрожания
-    [SerializeField] private float shakeSpeed = 10f; // Скорость дрожания
+    [SerializeField] private float shakeAmount = 0.1f; // амплитуда дрожания
+    [SerializeField] private float shakeSpeed = 10f; // скорость дрожания
 
     private Vector3 originalDrillPosition;
     public bool isDrill = false;
+
+    // Параметры для расчёта сопротивления породы:
+    [Header("Speed Modifiers")]
+    [SerializeField] private float softRockResistance = 0.02f; // сопротивление мягкой породы
+    [SerializeField] private float rockResistanceValue = 0.05f; // сопротивление обычного камня
+    [SerializeField] private float sulfurResistanceValue = 0.1f; // сопротивление от серы
+    [SerializeField] private float hardRockResistance = 0.09f; // сопротивление для hard (будет давать почти нулевую скорость)
+    [SerializeField] private float overheatPenaltyValue = 0.03f; // штраф скорости при перегреве
+
+    private float currentRockResistance = 0f; // текущее сопротивление породы
+    private bool isRocking = false; // для отслеживания состояния hard
+
     private void Awake()
     {
         if (Instance == null)
@@ -58,10 +68,11 @@ public class DrillController : MonoBehaviour
     private void Start()
     {
         SelectDrill(0);
-        SumSpeed(0);
+        // Изначально рассчитываем скорость без сопротивления
+        SumSpeed(0f);
         originalDrillColor = drillSpriteRenderer.color;
-        baseDrillImprovement = currentDrillImprovement; // Сохраняем базовое значение
-        originalDrillPosition = drillSpriteRenderer.transform.localPosition; // Сохраняем начальную позицию
+        baseDrillImprovement = currentDrillImprovement; // сохраняем базовое значение
+        originalDrillPosition = drillSpriteRenderer.transform.localPosition; // сохраняем начальную позицию
         AudioManager.instance.Play("bigDrill", transform.position);
         AudioManager.instance.Play("ost");
     }
@@ -71,15 +82,15 @@ public class DrillController : MonoBehaviour
         if (GameManager.instance != null && isDrill)
         {
             MovePlatformDown();
-            CoolingSystem.instance?.DrainCooling(0.1f); // или другой метод, который ты используешь
-            ShakeDrill(); // Добавляем дрожание
+            CoolingSystem.instance?.DrainCooling(0.1f);
+            ShakeDrill();
         }
     }
 
     public void MovePlatformDown()
     {
         Vector3 newPosition = platform.transform.position;
-        newPosition.y -=  drillSpeed;
+        newPosition.y -= drillSpeed;
         platform.transform.position = newPosition;
 
         CheckAndRemoveTilesUnderPlatform();
@@ -126,30 +137,38 @@ public class DrillController : MonoBehaviour
         }
     }
 
+    // При входе в зону разного типа породы устанавливаем соответствующее сопротивление:
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("SoftRock"))
         {
-            Debug.Log("Бур замедлен из-за земли");
-            currentRockSpeed = 0.5f;
-            SumSpeed(currentRockSpeed);
+            Debug.Log("Бур замедлен из-за мягкой породы");
+            currentRockResistance = softRockResistance;
+            SumSpeed(currentRockResistance);
             CameraShake.instance?.ShakeCamera(0.07f, true);
         }
         if (other.CompareTag("Rock"))
         {
-            Debug.Log("Бур замедлен из-за Камня");
-            currentRockSpeed = 0.1f;
-            SumSpeed(currentRockSpeed);
+            Debug.Log("Бур замедлен из-за камня");
+            currentRockResistance = rockResistanceValue;
+            SumSpeed(currentRockResistance);
             CameraShake.instance?.ShakeCamera(0.07f, true);
         }
-
+        if (other.CompareTag("Sulfur"))
+        {
+            Debug.Log("Бур замедлен из-за серы");
+            currentRockResistance = sulfurResistanceValue;
+            SumSpeed(currentRockResistance);
+            CameraShake.instance?.ShakeCamera(0.07f, true);
+        }
         if (other.CompareTag("Hard"))
         {
             TriggerEnemiesEscape();
             currentTime = 7f;
             Debug.Log("Бур погряз в очень жёсткой породе");
-            currentRockSpeed = 0.001f;
-            SumSpeed(currentRockSpeed);
+            // Применяем максимальное сопротивление для hard
+            currentRockResistance = hardRockResistance;
+            SumSpeed(currentRockResistance);
             CameraShake.instance?.ShakeCamera(0.01f, true);
             GameManager.instance.MiningStage();
             DroneController.instance.isActive = true;
@@ -162,84 +181,58 @@ public class DrillController : MonoBehaviour
         }
     }
 
+    // При нахождении в области породы обновляем камеру
     private void OnTriggerStay2D(Collider2D other)
     {
-        if ((other.CompareTag("SoftRock")) && GameManager.instance.isDrillingActive)
+        if ((other.CompareTag("SoftRock") || other.CompareTag("Rock")) && GameManager.instance.isDrillingActive)
         {
             CameraShake.instance?.ShakeCamera(0.07f, true);
         }
-        if ((other.CompareTag("Rock")) && GameManager.instance.isDrillingActive)
+        if (other.CompareTag("Sulfur") && GameManager.instance.isDrillingActive)
         {
-            CameraShake.instance?.ShakeCamera(0.07f, true);
+            CameraShake.instance?.ShakeCamera(0.01f, true);
         }
-
         if (other.CompareTag("Hard") && GameManager.instance.isDrillingActive)
         {
             CameraShake.instance?.ShakeCamera(0.01f, true);
         }
     }
 
-    private IEnumerator HardDrill()
-    {
-        while (currentTime > 0)
-        {
-            DroneHUD.instance.TimeUpdate(currentTime);
-            currentTime -= Time.deltaTime;
-            yield return null;
-        }
-
-        DroneHUD.instance.TimeUpdate(-1f);
-        CameraShake.instance?.ShakeCamera(0f, false);
-        //GameManager.instance.DrillingStage();
-        //DroneController.instance.isActive = false;
-        currentRockSpeed = 0.1f;
-        SumSpeed(currentRockSpeed);
-    }
-
+    // После выхода из зоны сопротивления сбрасываем сопротивление на 0
     private void OnTriggerExit2D(Collider2D other)
     {
-        if (other.CompareTag("SoftRock"))
+        if (other.CompareTag("SoftRock") || other.CompareTag("Rock") || other.CompareTag("Hard") || other.CompareTag("Sulfur"))
         {
-            SumSpeed(0);
-            CameraShake.instance?.ShakeCamera(0.01f, true);
-        }
-        if (other.CompareTag("Rock"))
-        {
-            SumSpeed(0);
-            CameraShake.instance?.ShakeCamera(0.01f, true);
-        }
-        if (other.CompareTag("Hard"))
-        {
-            isRocking = true;
-            SumSpeed(0);
+            if (other.CompareTag("Hard"))
+                isRocking = true;
+            currentRockResistance = 0f;
+            SumSpeed(currentRockResistance);
             CameraShake.instance?.ShakeCamera(0.01f, true);
         }
     }
 
-    private void SumSpeed(float rock)
+    // Новый метод для пересчёта скорости по формуле с бонусом бура
+    private void SumSpeed(float rockResistance)
     {
-        if (rock == 0)
-        {
-            drillSpeed = fallSpeed;
-            return;
-        }
-        drillSpeed =originalDrillSpeed * currentDrillImprovement * rock;
-        
+        // Формула: базовая скорость падения умноженная на коэффициент улучшения бура,
+        // затем вычитаем сопротивление породы и штраф перегрева (если активен)
+        float overheatPenalty = isOverheated ? overheatPenaltyValue : 0f;
+        drillSpeed = (fallSpeed * currentDrillImprovement) - rockResistance - overheatPenalty;
+        if (drillSpeed < 0f) drillSpeed = 0f;
     }
 
+    // Метод для выбора бура
     public void SelectDrill(int drillIndex)
     {
         if (drillIndex < 0 || drillIndex >= drillPool.Count) return;
 
         currentDrillIndex = drillIndex;
         Drill selectedDrill = drillPool[drillIndex];
-        baseDrillImprovement = selectedDrill.improvementFactor; // Обновляем базовое значение
-        currentDrillImprovement = isOverheated ? 
-            baseDrillImprovement * overheatDrillMultiplier : 
-            baseDrillImprovement;
+        baseDrillImprovement = selectedDrill.improvementFactor; // обновляем базовое значение
+        currentDrillImprovement = isOverheated ? baseDrillImprovement * overheatDrillMultiplier : baseDrillImprovement;
 
-        // Пересчитываем скорость бурения
-        SumSpeed(currentRockSpeed);
+        // Пересчитываем скорость с текущим сопротивлением
+        SumSpeed(currentRockResistance);
 
         if (drillSpriteRenderer != null)
         {
@@ -264,8 +257,6 @@ public class DrillController : MonoBehaviour
     private void StartOverheat()
     {
         isOverheated = true;
-        currentDrillImprovement *= overheatDrillMultiplier;
-        
         if (drillSpriteRenderer != null)
         {
             drillSpriteRenderer.color = overheatColor;
@@ -281,7 +272,8 @@ public class DrillController : MonoBehaviour
             AudioSource.PlayClipAtPoint(overheatSound, transform.position);
         }
         
-        Debug.Log("Перегрев! Мощность снижена до 10%");
+        Debug.Log("Перегрев! Мощность снижена");
+        SumSpeed(currentRockResistance);
     }
 
     private void StopOverheat()
@@ -300,13 +292,14 @@ public class DrillController : MonoBehaviour
         }
         
         Debug.Log("Охлаждение восстановлено. Мощность нормальная");
+        SumSpeed(currentRockResistance);
     }
 
     // Метод для дрожания бура
     private void ShakeDrill()
     {
-        float shakeOffset = Mathf.Sin(Time.time * shakeSpeed) * shakeAmount; // Используем синус для создания колебаний
-        drillSpriteRenderer.transform.localPosition = originalDrillPosition + new Vector3(0f, shakeOffset-0.2f, 0f); // Смещаем бур по оси Y
+        float shakeOffset = Mathf.Sin(Time.time * shakeSpeed) * shakeAmount;
+        drillSpriteRenderer.transform.localPosition = originalDrillPosition + new Vector3(0f, shakeOffset - 0.2f, 0f);
     }
     
     private void TriggerEnemiesEscape()
@@ -316,7 +309,7 @@ public class DrillController : MonoBehaviour
         {
             enemy.EscapeAndDespawn();
         }
-        EnemyRammer[] enemiesRm = FindObjectsOfType< EnemyRammer>();
+        EnemyRammer[] enemiesRm = FindObjectsOfType<EnemyRammer>();
         foreach (EnemyRammer enemy in enemiesRm)
         {
             enemy.EscapeAndDespawn();
@@ -326,8 +319,21 @@ public class DrillController : MonoBehaviour
         {
             enemy.EscapeAndDespawn();
         }
-    
-        // Альтернативно, если используете пул объектов:
-        // EnemyManager.Instance.DespawnAllEnemies();
+    }
+
+    // Логика для hard-породы: скорость почти сводится к нулю на 7 секунд.
+    private IEnumerator HardDrill()
+    {
+        while (currentTime > 0)
+        {
+            DroneHUD.instance.TimeUpdate(currentTime);
+            currentTime -= Time.deltaTime;
+            yield return null;
+        }
+
+        DroneHUD.instance.TimeUpdate(-1f);
+        CameraShake.instance?.ShakeCamera(0f, false);
+        currentRockResistance = 0f;
+        SumSpeed(currentRockResistance);
     }
 }
