@@ -21,6 +21,10 @@ public class DroneController : MonoBehaviour
 
     [Header("Настройки ввода")]
     [SerializeField] private float modeSwitchCooldown = 0.5f;
+    
+    [Header("Настройки расстояния дро платформы")]
+    [SerializeField] private GameObject platform;
+    [SerializeField] private float switchRadius = 2f;
 
     private Vector3 targetPosition;
     public bool isActive = false;
@@ -58,19 +62,27 @@ public class DroneController : MonoBehaviour
         if (Input.GetMouseButton(1) && Time.time - lastSwitchTime >= modeSwitchCooldown)
         {
             lastSwitchTime = Time.time;
-            isActive = !isActive;
 
-            // Заменяем SwitchStage(isActive) на прямые вызовы
-            if (isActive)
+            if (isActive) // Сейчас активен дрон → хотим вернуться в бурение
             {
-                GameManager.instance.MiningStage();
-            }
-            else
-            {
+                float distanceToPlatform = Vector3.Distance(transform.position, platform.transform.position);
+                if (distanceToPlatform > switchRadius)
+                {
+                    Debug.Log("Слишком далеко от платформы для возвращения в режим бурения.");
+                    return;
+                }
+
+                isActive = false;
                 GameManager.instance.DrillingStage();
+            }
+            else // Сейчас активна платформа → переходим в майнинг
+            {
+                isActive = true;
+                GameManager.instance.MiningStage();
             }
         }
     }
+
 
     private void HandleMovement()
     {
@@ -212,6 +224,15 @@ public class DroneController : MonoBehaviour
         if (other.CompareTag("CoolingStation"))
         {
             CoolingSystem.instance.RefillCooling(2f); // 2 единицы за кадр
+        }
+    }
+    
+    private void OnDrawGizmosSelected()
+    {
+        if (platform != null)
+        {
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawWireSphere(platform.transform.position, switchRadius);
         }
     }
     

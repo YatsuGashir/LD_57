@@ -181,8 +181,8 @@ public class DrillController : MonoBehaviour
 
         DroneHUD.instance.TimeUpdate(-1f);
         CameraShake.instance?.ShakeCamera(0f, false);
-        GameManager.instance.DrillingStage();
-        DroneController.instance.isActive = false;
+        //GameManager.instance.DrillingStage();
+        //DroneController.instance.isActive = false;
         currentRockSpeed = 0.1f;
         SumSpeed(currentRockSpeed);
     }
