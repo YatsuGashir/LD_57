@@ -137,6 +137,8 @@ MonoBehaviour:
   spiralRotationSpeed: 5
   spiralTighteningSpeed: 0.1
   spiralForwardOffset: 5
+  escapeSpeed: 10
+  escapeDuration: 2
 --- !u!114 &-1162522416608558449
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -149,7 +151,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2052137ae2dd8924e88d9646e53874d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHP: 50
+  maxHP: 2
   currentHP: 0
   enemyTag: Enemy
 --- !u!70 &5928264144025691819

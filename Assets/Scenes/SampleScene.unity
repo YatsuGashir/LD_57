@@ -58300,6 +58300,10 @@ MonoBehaviour:
   - upgradeName: 2
     refillSpeedMultiplier: 50
     drainSpeedMultiplier: 2
+    upgradeSprite: {fileID: 176197249660567553, guid: d76bd35ce01ad1043b725950c7032d61, type: 3}
+  - upgradeName: 3
+    refillSpeedMultiplier: 50
+    drainSpeedMultiplier: 2
     upgradeSprite: {fileID: -4936500933610770601, guid: b1e35598541dd84489e3652fdcaade40, type: 3}
 --- !u!61 &1900983233
 BoxCollider2D:
@@ -60580,12 +60584,13 @@ MonoBehaviour:
   platformCollider: {fileID: 8983355411431715759}
   originalDrillSpeed: 0.01
   drillSpeed: 0
+  fallSpeed: 0.1
   drillPool:
   - drillName: 1 level
-    improvementFactor: 1
+    improvementFactor: 0.12
     drillSprite: {fileID: 1933743943302405616, guid: a6bc61de10192ef45a0749e73da930ac, type: 3}
   - drillName: 2 level
-    improvementFactor: 5
+    improvementFactor: 0.15
     drillSprite: {fileID: -1281562793398839055, guid: d76bd35ce01ad1043b725950c7032d61, type: 3}
   - drillName: 3 level
     improvementFactor: 7
@@ -60599,6 +60604,11 @@ MonoBehaviour:
   shakeAmount: 0.1
   shakeSpeed: 10
   isDrill: 0
+  softRockResistance: 0.08
+  rockResistanceValue: 0.09
+  hardRockResistance: 0.9
+  turretSpeedBonus: 0.05
+  overheatPenaltyValue: 0.5
 --- !u!61 &7207867747189750757
 BoxCollider2D:
   m_ObjectHideFlags: 0
