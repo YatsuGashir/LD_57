@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: a3a08f4cc9935134db4b1f92f26c088a
+guid: e1f59f2680530e746a96e743a2173268
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -7153582771943156138
-    second: Photoshop_1QDUpJDRvI_0
+      213: 601074558570834252
+    second: "\u041A\u043E\u043D\u0442\u0443\u0440 \u0442\u0435\u043B\u043E_0"
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Photoshop_1QDUpJDRvI_0
+      name: "\u041A\u043E\u043D\u0442\u0443\u0440 \u0442\u0435\u043B\u043E_0"
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 155
-        height: 198
+        width: 59
+        height: 90
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 65659f6ce5e59bc90800000000000000
-      internalID: -7153582771943156138
+      spriteID: c49a32b5022775800800000000000000
+      internalID: 601074558570834252
       vertices: []
       indices: 
       edges: []
@@ -147,8 +147,7 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable:
-      Photoshop_1QDUpJDRvI_0: -7153582771943156138
+    nameFileIdTable: {}
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

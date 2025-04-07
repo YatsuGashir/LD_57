@@ -37,6 +37,9 @@ public class UpgradeManager : MonoBehaviour
     [Header("Система диалогов")]
     [SerializeField] DialogueManager dialogueManager;
     [SerializeField] Sprite portrait1;
+    
+    private Sprite portrait2;
+    private int currentDrill=0;
 
 
     private int oreCount = 0;
@@ -85,9 +88,11 @@ public class UpgradeManager : MonoBehaviour
     {
         if (oreCount >= upgradeCost)
         {
+            currentDrill++;
             AudioManager.instance.Play("upgrade");
             oreCount -= upgradeCost;
-            DrillController.Instance.SelectDrill(1);
+            upgradeCost += 2;
+            DrillController.Instance.SelectDrill(currentDrill);
         }
     }
 
